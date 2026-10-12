@@ -1,0 +1,32 @@
+name: Windows release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - name: Check release tag
+        run: node -e "if (process.env.GITHUB_REF_NAME !== 'v' + require('./package.json').version) throw new Error('Tag must match package.json version')"
+      - run: npm ci
+      - run: npm test
+      - run: npm run test:smoke
+      - run: npm run dist
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Publish portable executable
+        uses: softprops/action-gh-release@v3
+        with:
+          files: release/iGEM-Ping-*-win-x64.exe
+          fail_on_unmatched_files: true
+          generate_release_notes: true

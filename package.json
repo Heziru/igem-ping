@@ -1,0 +1,32 @@
+{
+  "name": "igem-ping",
+  "version": "0.1.0",
+  "description": "A little desktop companion for every iGEMer. Pings, focus time, and official iGEM resources.",
+  "main": "main.cjs",
+  "author": "iGEM Ping contributors",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test tests/core.test.cjs",
+    "test:smoke": "node tests/smoke.cjs",
+    "dist": "electron-builder --win portable --x64"
+  },
+  "devDependencies": {
+    "electron": "44.7.0",
+    "electron-builder": "26.15.3",
+    "playwright": "1.64.0"
+  },
+  "build": {
+    "appId": "org.igemping.desktop",
+    "productName": "iGEM Ping",
+    "directories": { "output": "release" },
+    "files": ["main.cjs", "preload.cjs", "core.cjs", "src/**/*", "assets/**/*", "LICENSE", "ASSETS.md"],
+    "win": {
+      "target": "portable",
+      "icon": "assets/icon.png",
+      "artifactName": "iGEM-Ping-${version}-win-${arch}.${ext}",
+      "signAndEditExecutable": false
+    },
+    "portable": { "requestExecutionLevel": "user" }
+  }
+}

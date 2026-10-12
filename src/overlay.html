@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>iGEM Ping Wheel</title>
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="overlay.css">
+</head>
+<body class="overlay-page">
+  <main id="wheel" class="ping-wheel" aria-label="Choose a ping" hidden>
+    <div class="wheel-track" aria-hidden="true"></div>
+    <p id="wheel-heading" class="wheel-heading">PICK A PING</p>
+    <div id="wheel-options" class="wheel-options"></div>
+    <button id="wheel-cancel" class="wheel-cancel" type="button" aria-label="Close ping wheel" title="Close ping wheel">
+      <img src="../assets/pet.png" alt="" draggable="false">
+      <span>iGEM Ping</span>
+    </button>
+    <p id="wheel-hint" class="wheel-hint">Choose a signal · <kbd>1</kbd>–<kbd>6</kbd> · <kbd>Esc</kbd> to close</p>
+  </main>
+  <div id="ping-marker" class="ping-marker" role="status" aria-live="assertive" hidden>
+    <span class="ping-ring ring-one" aria-hidden="true"></span>
+    <span class="ping-ring ring-two" aria-hidden="true"></span>
+    <div class="ping-body">
+      <span id="ping-symbol" class="ping-symbol" aria-hidden="true"></span>
+      <span id="ping-label" class="ping-label"></span>
+    </div>
+  </div>
+  <script type="module" src="overlay.js"></script>
+</body>
+</html>

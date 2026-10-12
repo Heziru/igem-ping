@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>iGEM Ping Companion</title>
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="overlay.css">
+</head>
+<body class="pet-page">
+  <div id="pet-speech" class="pet-speech" role="status" aria-live="polite">Click to ping</div>
+  <div id="focus-badge" class="focus-badge" hidden></div>
+  <button id="pet" type="button" aria-label="Open ping wheel" title="Click for pings · drag to move · right-click for settings">
+    <span class="pet-art"><img src="../assets/pet.png" alt="iGEM Ping companion" draggable="false"></span>
+    <span class="pet-ground" aria-hidden="true"></span>
+  </button>
+  <script type="module" src="pet.js"></script>
+</body>
+</html>
