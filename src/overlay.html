@@ -9,19 +9,19 @@
   <link rel="stylesheet" href="overlay.css">
 </head>
 <body class="overlay-page">
-  <main id="wheel" class="ping-wheel" aria-label="Choose a ping" hidden>
-    <div class="wheel-track" aria-hidden="true"></div>
-    <p id="wheel-heading" class="wheel-heading">PICK A PING</p>
+  <main id="wheel" class="ping-wheel" aria-label="Official iGEM guide" hidden>
+    <div class="wheel-modes" role="group" aria-label="Wheel mode">
+      <button id="mode-guide" class="mode-button active" type="button" aria-pressed="true">iGEM Guide</button>
+      <button id="mode-signals" class="mode-button" type="button" aria-pressed="false">Signals</button>
+    </div>
     <div id="wheel-options" class="wheel-options"></div>
     <button id="wheel-cancel" class="wheel-cancel" type="button" aria-label="Close ping wheel" title="Close ping wheel">
       <img src="../assets/pet.png" alt="" draggable="false">
-      <span>iGEM Ping</span>
+      <span id="wheel-cancel-label">Close</span>
     </button>
-    <p id="wheel-hint" class="wheel-hint">Choose a signal · <kbd>1</kbd>–<kbd>6</kbd> · <kbd>Esc</kbd> to close</p>
+    <p id="wheel-hint" class="wheel-hint" role="status" aria-live="polite">Official iGEM links · 1–6 · Esc to close</p>
   </main>
   <div id="ping-marker" class="ping-marker" role="status" aria-live="assertive" hidden>
-    <span class="ping-ring ring-one" aria-hidden="true"></span>
-    <span class="ping-ring ring-two" aria-hidden="true"></span>
     <div class="ping-body">
       <span id="ping-symbol" class="ping-symbol" aria-hidden="true"></span>
       <span id="ping-label" class="ping-label"></span>

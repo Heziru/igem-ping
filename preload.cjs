@@ -17,6 +17,8 @@ contextBridge.exposeInMainWorld('igem', Object.freeze({
   ping: (id) => ipcRenderer.invoke('igem:ping', id),
   closeWheel: () => ipcRenderer.invoke('igem:close-wheel'),
   showSettings: () => ipcRenderer.invoke('igem:show-settings'),
+  minimizeSettings: () => ipcRenderer.invoke('igem:minimize-settings'),
+  hideSettings: () => ipcRenderer.invoke('igem:hide-settings'),
   openLink: (key) => ipcRenderer.invoke('igem:open-link', key),
   startTimer: (minutes) => ipcRenderer.invoke('igem:start-timer', minutes),
   stopTimer: () => ipcRenderer.invoke('igem:stop-timer'),

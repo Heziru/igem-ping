@@ -1,4 +1,4 @@
-import { PINGS, t, applyState } from './shared.js';
+import { PINGS, t, applyState, applyImageSkins } from './shared.js';
 
 const api = window.igem;
 const pet = document.querySelector('#pet');
@@ -9,11 +9,12 @@ let activePing = null;
 let reactionTimeout;
 
 function updateText() {
-  pet.title = t('Click for pings · drag to move · right-click for settings', '点击打开 Ping · 拖动移动 · 右键打开设置');
-  pet.setAttribute('aria-label', t('Open ping wheel', '打开 Ping 轮盘'));
+  pet.title = t('Click for the iGEM guide · drag to move · right-click for settings', '点击打开 iGEM 导航 · 拖动移动 · 右键打开设置');
+  pet.setAttribute('aria-label', t('Open iGEM guide', '打开 iGEM 导航'));
   pet.querySelector('img').alt = t('iGEM Ping companion', 'iGEM Ping 桌宠');
-  speech.textContent = activePing ? t(activePing.en, activePing.zh) : t('Click to ping', '点我发个 Ping');
+  speech.textContent = activePing ? t(activePing.en, activePing.zh) : t('Your iGEM guide', '点我玩转 iGEM');
   updateCountdown();
+  applyImageSkins();
 }
 
 function updateCountdown() {
@@ -25,6 +26,7 @@ function updateCountdown() {
   const seconds = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000));
   const time = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
   focusBadge.textContent = `${t('FOCUS', '专注')} ${time}`;
+  applyImageSkins();
   focusBadge.setAttribute('aria-label', `${t('Focus time remaining', '专注剩余时间')} ${time}`);
 }
 
@@ -38,7 +40,6 @@ function react({ id }) {
   if (!ping) return;
   activePing = ping;
   clearTimeout(reactionTimeout);
-  document.body.style.setProperty('--ping-color', ping.color);
   pet.dataset.reaction = '';
   // Restart the brief reaction if the same ping is selected twice.
   void pet.offsetWidth;

@@ -15,8 +15,20 @@ const LINKS = Object.freeze({
   registry: 'https://registry.igem.org/',
   safety: 'https://responsibility.igem.org/safety-policies',
   community: 'https://community.igem.org/',
-  resources: 'https://competition.igem.org/participation/starting-a-team',
+  resources: 'https://competition.igem.org/about/starting-a-team',
   deliverables: 'https://competition.igem.org/deliverables/',
+  judging: 'https://competition.igem.org/judging/handbook',
+  uploads: 'https://competition.igem.org/deliverables/guides',
+  projects: 'https://teams.igem.org/list?year=all',
+  submissions: 'https://teams.igem.org/go/deliverables',
+  wikiGettingStarted: 'https://teams.igem.org/go/deliverables/wiki/getting-started',
+  wikiUploads: 'https://teams.igem.org/go/deliverables/wiki/uploads',
+  video: 'https://video.igem.org/',
+  phoenix: 'https://community.igem.org/projects/phoenix-project',
+  previousYears: 'https://competition.igem.org/about/previous-years',
+  competitionCycle: 'https://competition.igem.org/about/navigating-igem',
+  medals: 'https://competition.igem.org/judging/awards/medals',
+  rules: 'https://competition.igem.org/about/rules-and-policies',
   engineering: 'https://technology.igem.org/engineering',
   jamboree: 'https://jamboree.igem.org/',
 });
@@ -53,14 +65,17 @@ function clampPosition(position, size, workArea) {
 }
 
 function overlayPlacement(cursor, workArea) {
-  const position = clampPosition({ x: cursor.x - 280, y: cursor.y - 280 },
-    { width: 560, height: 560 }, workArea);
+  const side = Math.max(1, Math.floor(Math.min(560, workArea.width, workArea.height)));
+  const scale = side / 560;
+  const position = clampPosition({ x: cursor.x - side / 2, y: cursor.y - side / 2 },
+    { width: side, height: side }, workArea);
   return {
     ...position,
-    // Keep the entire ping badge visible at display edges.
+    width: side, height: side, scale,
+    // Renderer coordinates stay in the 560 px design space at every display scale.
     anchor: {
-      x: clamp(cursor.x - position.x, 120, 440),
-      y: clamp(cursor.y - position.y, 120, 440),
+      x: clamp((cursor.x - position.x) / scale, 120, 440),
+      y: clamp((cursor.y - position.y) / scale, 120, 440),
     },
   };
 }

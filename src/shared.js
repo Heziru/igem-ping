@@ -1,23 +1,25 @@
-export const PINGS = [
-  { id:'help', color:'#5a88bc', symbol:'?', en:'Need a hand', zh:'来帮个忙', detailEn:'A second pair of eyes on your design.', detailZh:'设计遇到问题，请伙伴一起看看。' },
-  { id:'idea', color:'#a484cf', symbol:'✦', en:'New idea', zh:'有个想法', detailEn:'A little spark for the next iteration.', detailZh:'给下一轮工程迭代一点灵感。' },
-  { id:'caution', color:'#d7a04c', symbol:'!', en:'Check this', zh:'注意这里', detailEn:'Pause and take a closer look.', detailZh:'先停一下，仔细核对这个地方。' },
-  { id:'success', color:'#4d9b73', symbol:'✓', en:'It worked!', zh:'有结果啦', detailEn:'Celebrate the small breakthroughs.', detailZh:'每一个小进展，都值得庆祝。' },
-  { id:'focus', color:'#6486a0', symbol:'◷', en:'Focus time', zh:'专注一下', detailEn:'One thing at a time. You have this.', detailZh:'一次做好一件事，慢慢推进。' },
-  { id:'break', color:'#d78979', symbol:'☕', en:'Take a break', zh:'休息一下', detailEn:'Rest your eyes. Come back curious.', detailZh:'让眼睛休息一下，带着好奇心回来。' },
+export const GUIDES = [
+  { id:'progress', icon:'calendar', en:'Timeline', zh:'赛程与截止', detailEn:'See this season’s deliverables and upcoming deadlines.', detailZh:'查看本赛季的比赛交付物、时间线与截止日期。', linkKey:'deliverables' },
+  { id:'judging', icon:'resources', en:'Judge handbook', zh:'评审手册', detailEn:'Read the official handbook to understand the judging process.', detailZh:'阅读官方评审手册，了解评审流程与评审员参考资料。', linkKey:'judging' },
+  { id:'uploads', icon:'link', en:'Submission guides', zh:'上传与提交指南', detailEn:'Check requirements and instructions for each deliverable.', detailZh:'查看各项提交物的要求与操作说明；资源页另有 Wiki 素材上传入口。', linkKey:'uploads' },
+  { id:'projects', icon:'community', en:'Past teams', zh:'历届队伍项目', detailEn:'Search all years by team, institution or region, then explore their project wikis.', detailZh:'按队名、学校或地区搜索全部年份队伍，进入项目 Wiki。', linkKey:'projects' },
+  { id:'start', icon:'home', en:'Start here', zh:'新手入门', detailEn:'Plan your team, roles, project, lab space and funding.', detailZh:'从组队、分工、选题、实验空间和经费开始。', linkKey:'resources' },
+  { id:'submissions', icon:'success', en:'My deliverables', zh:'我的提交进度', detailEn:'Sign in and select your team to check submission status and deadlines.', detailZh:'登录官方账号并选择队伍，查看提交状态和截止事项。', linkKey:'submissions' },
 ];
 
-const paths = {
-  help:'<path d="M9 9a3 3 0 1 1 5 2.2c-1.4.8-2 1.3-2 2.8"/><path d="M12 18h.01"/><circle cx="12" cy="12" r="10"/>',
-  idea:'<path d="M9 18h6m-5 3h4M8 13a6 6 0 1 1 8 0c-1.2 1-1 2-1 2H9s.2-1-1-2Z"/><path d="M12 1V0M2 8H0m24 0h-2"/>',
-  caution:'<path d="m10.3 3-8.5 15a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3a2 2 0 0 0-3.4 0Z"/><path d="M12 9v4m0 4h.01"/>',
-  success:'<path d="m7 12 3 3 7-7"/><circle cx="12" cy="12" r="10"/>',
-  focus:'<circle cx="12" cy="13" r="9"/><path d="M12 8v5l3 2M9 1h6m4 3 2 2"/>',
-  break:'<path d="M3 8h14v7a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5Zm14 1h2a3 3 0 0 1 0 6h-2M7 1v3m5-3v3M2 23h18"/>',
-  link:'<path d="M14 3h7v7m0-7L10 14m0-9H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5"/>',
-  settings:'<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="8" cy="6" r="2" fill="currentColor"/><circle cx="16" cy="12" r="2" fill="currentColor"/><circle cx="10" cy="18" r="2" fill="currentColor"/>',
-};
-export const icon = (name, size=24) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.idea}</svg>`;
+export const PINGS = [
+  { id:'help', en:'Need a hand', zh:'来帮个忙', detailEn:'A second pair of eyes on your design.', detailZh:'设计遇到问题，请伙伴一起看看。' },
+  { id:'idea', en:'New idea', zh:'有个想法', detailEn:'A little spark for the next iteration.', detailZh:'给下一轮工程迭代一点灵感。' },
+  { id:'caution', en:'Check this', zh:'注意这里', detailEn:'Pause and take a closer look.', detailZh:'先停一下，仔细核对这个地方。' },
+  { id:'success', en:'It worked!', zh:'有结果啦', detailEn:'Celebrate the small breakthroughs.', detailZh:'每一个小进展，都值得庆祝。' },
+  { id:'focus', en:'Focus time', zh:'专注一下', detailEn:'One thing at a time. You have this.', detailZh:'一次做好一件事，慢慢推进。' },
+  { id:'break', en:'Take a break', zh:'休息一下', detailEn:'Rest your eyes. Come back curious.', detailZh:'让眼睛休息一下，带着好奇心回来。' },
+];
+
+const iconNames = ['help','idea','caution','success','focus','break','home','resources','settings','language','link','calendar','registry','engineering','safety','community'];
+const iconSizes = [16,18,20,21,22,24,28,30,32,36,40,44,48,56,60,64,72,84];
+// Display a cell from the ImageGen raster atlas; no icon artwork is drawn in code.
+export const icon = (name, size=24) => `<span class="asset-icon icon-${iconNames.includes(name)?name:'idea'} icon-size-${iconSizes.includes(size)?size:24}" aria-hidden="true"></span>`;
 export const t = (en, zh) => window.appState?.settings.language === 'zh' ? zh : en;
 export function applyState(state) {
   window.appState = state;
@@ -46,4 +48,20 @@ export function playSound(id) {
 export function formatTime(ms) {
   const seconds = Math.max(0,Math.ceil(ms/1000));
   return `${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}`;
+}
+// Select clean regions from the original ImageGen raster, like the icon atlas.
+// No bitmap is modified and no surface artwork is generated by JavaScript.
+export function applyImageSkins(root=document) {
+  const selector='.sidebar,.companion-card,.focus-card,.resource-card,.preferences-list,.privacy-card,.official-strip,.pet-speech,.ping-button,.guide-button,.window-controls button,.language-label,.duration-label,.text-button,.signals summary,.size-options button,.primary,.dark-button,.nav.active,#toast,.warning,.focus-badge,.wheel-option,.wheel-cancel,.mode-button,.wheel-hint,.ping-label';
+  for(const element of root.querySelectorAll(selector)) {
+    element.classList.add('image-surface');
+    if(element.querySelector(':scope > .image-skin'))continue;
+    const skin=document.createElement('span');
+    skin.className='image-skin';
+    skin.setAttribute('aria-hidden','true');
+    for(let i=0;i<9;i++)skin.append(document.createElement('span'));
+    element.prepend(skin);
+  }
+  // Inactive navigation entries have no visible surface.
+  root.querySelectorAll('.nav:not(.active)').forEach(element=>{element.classList.remove('image-surface');element.querySelector(':scope > .image-skin')?.remove();});
 }

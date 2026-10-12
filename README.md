@@ -2,19 +2,21 @@
 
 [简体中文](README.zh-CN.md)
 
-A little desktop companion for iGEMers. Keep the iGEM mascot Gemy nearby, drop a quick visual ping on your desktop, and take a timed focus break between ideas.
+A little desktop companion for iGEMers. Keep the iGEM mascot Gemy nearby, find the official page you need from a desktop wheel, and make room for focus and breaks.
 
 ![iGEM Ping desktop companion and settings](docs/preview.png)
 
 ## What it does
 
-- Six local pings: **Help**, **Idea**, **Caution**, **Success**, **Focus**, and **Break**.
+- Six official shortcuts in the default **iGEM Guide** wheel: **Timeline**, **Judge handbook**, **Submission guides**, **Past teams**, **Start here**, and **My deliverables**.
+- A separate **Signals** mode with six local signals: **Need a hand**, **New idea**, **Check this**, **It worked!**, **Focus time**, and **Take a break**.
 - A floating companion you can drag around your desktop.
-- A ping wheel at your cursor, plus a tray menu for quick access.
+- A desktop wheel at your cursor, plus a tray menu for quick access.
 - A focus timer from 1 to 180 minutes.
 - English by default, with a Simplified Chinese option.
 - Sound, reduced motion, and companion size preferences, saved on your computer.
 - Shortcuts to official iGEM resources in your default browser.
+- An iOS-inspired ImageGen PNG skin for icons, backgrounds, panels, and buttons. Labels remain real text that assistive technology can read; controls keep accessible names and keyboard interaction.
 
 This is an independent community project for everyone in iGEM. It is not an official iGEM application or an endorsement by the iGEM Foundation. Artwork sources and terms are listed in [ASSETS.md](ASSETS.md).
 
@@ -26,19 +28,36 @@ The packaged target is Windows x64. macOS and Linux builds are not provided or t
 
 ## Controls
 
-- **Ctrl + Alt + G:** open the ping wheel at the cursor.
+- **Ctrl + Alt + G:** open the wheel at the cursor, starting with official navigation.
 - **Ctrl + Alt + P:** show or hide the companion.
 - **Drag the companion:** move it.
 - **Right-click the companion:** open settings.
 - **Tray menu:** open settings, access the wheel, or quit.
 
-Choose a ping from the wheel to place its animation on your desktop. Use the focus timer in settings to start a session. If another application already owns a shortcut, use the companion or tray controls.
+Click the companion to open **iGEM Guide**, then choose an official shortcut to open its page in your default browser. Switch the wheel to **Signals** for local animations. The **1–6** keys select an item in the current mode, and **Esc** closes the wheel. Use the focus timer in settings to start a session. If another application already owns a shortcut, use the companion or tray controls.
 
 Pings appear locally. People watching a whole-screen share can see them; sharing only another application's window does not include the overlay. There are no shared rooms or pings sent to teammates. Exclusive fullscreen applications may cover the overlay.
 
+## Official navigation
+
+The six default shortcuts appear in this order:
+
+1. **Timeline:** [competition deliverables and deadlines](https://competition.igem.org/deliverables/).
+2. **Judge handbook:** [the official judging handbook](https://competition.igem.org/judging/handbook), covering the judging process and reference material for judges.
+3. **Submission guides:** [public deliverable guides](https://competition.igem.org/deliverables/guides), so you can read the instructions before signing in.
+4. **Past teams:** [the all-years team directory](https://teams.igem.org/list?year=all). Search by team name, institution, or region, then open a team's wiki.
+5. **Start here:** [the official starting-a-team guide](https://competition.igem.org/about/starting-a-team).
+6. **My deliverables:** [your team's deliverables dashboard](https://teams.igem.org/go/deliverables), where you can check submission status and deadlines after signing in and selecting your team.
+
+The resources page also offers [Wiki getting started](https://teams.igem.org/go/deliverables/wiki/getting-started) and [Wiki asset uploads](https://teams.igem.org/go/deliverables/wiki/uploads), both requiring an iGEM login and team selection, plus [Video Universe](https://video.igem.org/) for video and audio. Uploading media requires the appropriate account access. [Phoenix project search](https://community.igem.org/projects/phoenix-project) is another source of inspiration, with coverage through **2022** only; use the all-years directory for later teams.
+
+Uploading a wiki asset and submitting a competition deliverable are separate steps. Wiki source belongs in your team's iGEM GitLab repository; images, documents, and fonts use Wiki Uploads; video and audio use Video Universe. Follow the relevant official guide for each submission.
+
+These shortcuts open the live official websites. **Timeline** opens public requirements and dates; **My deliverables** opens your team's status page in the browser. The app does not sign in for you, read your team's dashboard, or synchronize your submission status.
+
 ## Privacy
 
-The application does not collect telemetry or make background network requests. Preferences stay in Electron's local user-data directory on your computer. Opening an official resource deliberately launches its HTTPS page in your browser; that website's own privacy practices then apply.
+The application does not require an account, collect telemetry, or make background network requests. Preferences stay in Electron's local user-data directory on your computer. Opening an official resource deliberately launches its HTTPS page in your browser; that website's login requirements and privacy practices then apply. Browser sign-in stays in your browser.
 
 Installing development dependencies and downloading releases use npm and GitHub as usual.
 

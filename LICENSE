@@ -20,7 +20,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
-Scope: This license applies to the project's source code and documentation.
+Scope: This license applies to the project's source code, documentation,
+and original interface PNG artwork identified in ASSETS.md.
 Official iGEM logos, mascots, trademarks, and other third-party artwork are
 excluded. Their presence in this repository does not grant rights under this
 license. See ASSETS.md for asset sources and applicable terms.

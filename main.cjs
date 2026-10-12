@@ -71,6 +71,7 @@ function createWindow(role, options) {
       sandbox: true,
       webSecurity: true,
       webviewTag: false,
+      zoomMode: role === 'overlay' ? 'isolated' : 'default',
       backgroundThrottling: role === 'settings',
     },
   });
@@ -92,12 +93,17 @@ function showSettings() {
   windows.settings.focus();
 }
 
+function hideSettings() {
+  if (tray) windows.settings.hide();
+  else app.quit();
+}
+
 function updateTray() {
   if (!tray) return;
   const zh = settings.language === 'zh';
   tray.setContextMenu(Menu.buildFromTemplate([
     { label: zh ? '打开 iGEM Ping' : 'Open iGEM Ping', click: showSettings },
-    { label: zh ? '打开 Ping 轮盘' : 'Open ping wheel', accelerator: 'Control+Alt+G', click: openWheel },
+    { label: zh ? '打开 iGEM 导航' : 'Open iGEM guide', accelerator: 'Control+Alt+G', click: openWheel },
     { label: zh ? '显示桌宠' : 'Show companion', type: 'checkbox', checked: settings.petVisible,
       click: () => applySettings({ petVisible: !settings.petVisible }) },
     { type: 'separator' },
@@ -125,7 +131,8 @@ function closeOverlay() {
 
 function placeOverlay(cursor) {
   const placement = overlayPlacement(cursor, screen.getDisplayNearestPoint(cursor).workArea);
-  windows.overlay.setPosition(placement.x, placement.y);
+  windows.overlay.setBounds({ x: placement.x, y: placement.y, width: placement.width, height: placement.height });
+  windows.overlay.webContents.setZoomFactor(placement.scale);
   overlayAnchor = placement.anchor;
 }
 
@@ -208,6 +215,8 @@ function registerIPC() {
   handle('ping', all, ping);
   handle('close-wheel', ['overlay'], closeOverlay);
   handle('show-settings', all, showSettings);
+  handle('minimize-settings', ['settings'], () => windows.settings.minimize());
+  handle('hide-settings', ['settings'], hideSettings);
   handle('open-link', all, openLink);
   handle('start-timer', ['settings', 'pet'], (minutes) => {
     timer = createTimer(minutes);
@@ -276,14 +285,13 @@ async function start() {
     title: 'iGEM Ping',
     width: Math.min(1120, primaryArea.width), height: Math.min(800, primaryArea.height),
     minWidth: Math.min(900, primaryArea.width), minHeight: Math.min(680, primaryArea.height),
-    backgroundColor: '#f5f2e9',
+    frame: false, hasShadow: false,
   });
   windows.settings.once('ready-to-show', showSettings);
   windows.settings.on('close', (event) => {
     if (!quitting) {
       event.preventDefault();
-      if (tray) windows.settings.hide();
-      else app.quit();
+      hideSettings();
     }
   });
 

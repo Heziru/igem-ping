@@ -21,6 +21,15 @@ const rendererErrors = [];
 
 async function launch() {
   application = await electron.launch({ args: [entry], cwd: root, env, timeout: 30_000 });
+  await application.evaluate(({ shell }) => {
+    globalThis.__smokeOpenedLinks = [];
+    globalThis.__smokeFailLinks = false;
+    // Exercise the real allowlist and IPC without launching any browser windows.
+    shell.openExternal = async (url) => {
+      if (globalThis.__smokeFailLinks) throw new Error('Simulated browser launch failure');
+      globalThis.__smokeOpenedLinks.push(url);
+    };
+  });
   const observe = (page) => {
     page.on('pageerror', (error) => rendererErrors.push(error.message));
     page.on('console', (message) => {
@@ -55,21 +64,48 @@ async function noHorizontalOverflow(page, label) {
   assert.ok(dimensions.scroll <= dimensions.width + 1, `${label} has horizontal overflow: ${JSON.stringify(dimensions)}`);
 }
 
+async function waitForWindow(title, method, expected) {
+  await application.evaluate(async ({ BrowserWindow }, target) => {
+    const window = BrowserWindow.getAllWindows().find((win) => win.getTitle() === target.title);
+    if (!window) throw new Error(`Missing window: ${target.title}`);
+    const deadline = Date.now() + 10_000;
+    while (window[target.method]() !== target.expected) {
+      if (Date.now() >= deadline) throw new Error(`${target.title}.${target.method} did not become ${target.expected}`);
+      await new Promise((resolve) => setTimeout(resolve, 25));
+    }
+  }, { title, method, expected });
+}
+
 async function run() {
   let { settings, pet, overlay } = await launch();
   assert.equal(await settings.locator('html').getAttribute('lang'), 'en');
-  assert.match(await settings.locator('#home h1').innerText(), /next big idea/);
+  assert.match(await settings.locator('#home h1').innerText(), /Your shortcut to\s+the iGEM world/);
   assert.deepEqual((await settings.evaluate(() => window.igem.getState())).settings, DEFAULT_SETTINGS);
   assert.ok(await pet.locator('#pet img').evaluate((img) => img.naturalWidth > 0));
   await noHorizontalOverflow(settings, 'English home');
 
-  await settings.locator('#language').selectOption('zh');
+  await settings.locator('#minimize').click();
+  await waitForWindow('iGEM Ping', 'isMinimized', true);
+  await pet.evaluate(() => window.igem.showSettings());
+  await waitForWindow('iGEM Ping', 'isMinimized', false);
+  await waitForWindow('iGEM Ping', 'isVisible', true);
+  await settings.locator('#hide').click();
+  await waitForWindow('iGEM Ping', 'isVisible', false);
+  await pet.evaluate(() => window.igem.showSettings());
+  await waitForWindow('iGEM Ping', 'isVisible', true);
+  for (const method of ['minimizeSettings', 'hideSettings']) {
+    assert.equal(await pet.evaluate(async (name) => {
+      try { await window.igem[name](); return false; } catch { return true; }
+    }, method), true, `${method} must reject a non-settings sender`);
+  }
+
+  await settings.locator('#language').click();
   await settings.waitForFunction(() => document.documentElement.lang === 'zh-CN');
-  assert.match(await settings.locator('#home h1').innerText(), /好想法/);
+  assert.match(await settings.locator('#home h1').innerText(), /通往 iGEM 世界/);
   await settings.locator('[data-panel="preferences"]').click();
   await settings.locator('#sound').uncheck();
   await settings.locator('#reducedMotion').check();
-  await settings.locator('#petSize').selectOption('1.2');
+  await settings.locator('[data-size="1.2"]').click();
   await settings.locator('#petVisible').uncheck();
   await settings.waitForFunction(() => window.appState.settings.petVisible === false);
   assert.equal(await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().find((win) => win.getTitle() === 'iGEM Ping Companion').isVisible()), false);
@@ -86,7 +122,7 @@ async function run() {
   application = null;
   ({ settings, pet, overlay } = await launch());
   assert.deepEqual((await settings.evaluate(() => window.igem.getState())).settings, savedSettings, 'Preferences survive a full app restart');
-  await settings.locator('#language').selectOption('en');
+  await settings.locator('#language').click();
   await settings.waitForFunction(() => document.documentElement.lang === 'en');
 
   await settings.locator('#minutes').fill('1');
@@ -130,8 +166,51 @@ async function run() {
   await settings.locator('#open-wheel').click();
   await overlay.locator('#wheel').waitFor({ state: 'visible' });
   assert.equal(await overlay.locator('.wheel-option').count(), 6);
-  await noHorizontalOverflow(overlay, 'Ping wheel');
+  assert.equal(await overlay.locator('#mode-guide').getAttribute('aria-pressed'), 'true');
+  const guideLinks = {
+    progress: 'deliverables', judging: 'judging', uploads: 'uploads',
+    projects: 'projects', start: 'resources', submissions: 'submissions',
+  };
+  assert.deepEqual(await overlay.locator('[data-guide]').evaluateAll((buttons) => buttons.map((button) => button.dataset.guide)), Object.keys(guideLinks));
+  assert.deepEqual(await overlay.evaluate(async () => {
+    const { GUIDES } = await import('./shared.js');
+    return Object.fromEntries(GUIDES.map((guide) => [guide.id, guide.linkKey]));
+  }), guideLinks);
+  await noHorizontalOverflow(overlay, 'Official guide wheel');
   await overlay.screenshot({ path: path.join(root, 'docs', 'wheel.png'), omitBackground: true, animations: 'disabled' });
+
+  const expectedLinks = [];
+  for (const [id, key] of Object.entries(guideLinks)) {
+    assert.ok(Object.hasOwn(LINKS, key), `${id} must have an allowlisted destination`);
+    await settings.evaluate(() => window.igem.openWheel());
+    await waitForWindow('iGEM Ping Wheel', 'isVisible', true);
+    await overlay.locator(`[data-guide="${id}"]`).click();
+    await waitForWindow('iGEM Ping Wheel', 'isVisible', false);
+    expectedLinks.push(LINKS[key]);
+    assert.deepEqual(await application.evaluate(() => globalThis.__smokeOpenedLinks), expectedLinks,
+      `${id} must open its official URL through the allowlist`);
+  }
+
+  // A failed browser launch leaves the guide available and reports a real error.
+  await application.evaluate(() => { globalThis.__smokeFailLinks = true; });
+  await settings.evaluate(() => window.igem.openWheel());
+  await waitForWindow('iGEM Ping Wheel', 'isVisible', true);
+  await overlay.locator('[data-guide="progress"]').click();
+  await overlay.waitForFunction(() => document.querySelector('#wheel-hint').textContent.includes('Could not open link'));
+  await waitForWindow('iGEM Ping Wheel', 'isVisible', true);
+  assert.deepEqual(await application.evaluate(() => globalThis.__smokeOpenedLinks), expectedLinks);
+  await application.evaluate(() => { globalThis.__smokeFailLinks = false; });
+  await overlay.keyboard.press('1');
+  await waitForWindow('iGEM Ping Wheel', 'isVisible', false);
+  expectedLinks.push(LINKS.deliverables);
+  assert.deepEqual(await application.evaluate(() => globalThis.__smokeOpenedLinks), expectedLinks);
+
+  await settings.evaluate(() => window.igem.openWheel());
+  await waitForWindow('iGEM Ping Wheel', 'isVisible', true);
+  await overlay.locator('#mode-signals').click();
+  assert.equal(await overlay.locator('#mode-signals').getAttribute('aria-pressed'), 'true');
+  assert.equal(await overlay.locator('[data-ping]').count(), 6);
+  await noHorizontalOverflow(overlay, 'Signals wheel');
   await overlay.locator('[data-ping="idea"]').click();
   await overlay.locator('#ping-marker').waitFor({ state: 'visible' });
   assert.equal(await overlay.locator('#wheel').isVisible(), false);
@@ -142,10 +221,12 @@ async function run() {
   // Reopen after the ping and verify the keyboard cancellation route.
   await settings.evaluate(() => window.igem.openWheel());
   await overlay.locator('#wheel').waitFor({ state: 'visible' });
+  assert.equal(await overlay.locator('#mode-guide').getAttribute('aria-pressed'), 'true', 'Reopening restores the default guide');
+  assert.equal(await overlay.locator('[data-guide]').count(), 6);
   await overlay.keyboard.press('Escape');
-  assert.equal(await application.evaluate(({ BrowserWindow }) => BrowserWindow.getAllWindows().find((win) => win.getTitle() === 'iGEM Ping Wheel').isVisible()), false);
+  await waitForWindow('iGEM Ping Wheel', 'isVisible', false);
   assert.deepEqual(rendererErrors, [], 'No renderer exceptions or console errors');
-  console.log('Smoke passed: 3 windows, artwork, languages, persisted preferences, timer validation, official links, wheel/ping, cancellation, and layout.');
+  console.log('Smoke passed: 3 windows, artwork, languages, persisted preferences, frameless controls, timer validation, six official guide links, link failures, signals/ping, cancellation, and layout.');
   console.log('Captured docs/preview.png and docs/wheel.png from app windows only.');
 }
 

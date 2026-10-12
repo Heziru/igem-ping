@@ -14,16 +14,30 @@ Gemy, iGEM's visual identity, and associated trademark rights remain with their 
 
 ## Official logo
 
-`assets/igem-logo.svg` is the original, unmodified dark-lettering logo downloaded from iGEM's official [Connect page](https://competition.igem.org/about/connect).
+`assets/igem-logo.png` is the original, unmodified official full-color logo with dark lettering, used to identify official iGEM resource links.
 
-- Source file: [iGEM logo, dark SVG](https://static.igem.org/websites/common/2022/logos/igem-logo-dark.svg).
-- iGEM and its logo are trademarks of iGEM. The logo is excluded from the MIT license and is used to identify links to official iGEM resources.
+- [Official PNG file](https://static.igem.org/mediawiki/igem.org/c/c9/Igem-logo-fullcolorblack%402x.png).
+- [iGEM's Connect page](https://competition.igem.org/about/connect) provides brand resources.
+- iGEM and its logo are trademarks of iGEM. The logo is excluded from the MIT license.
 - The [2021 brand manual](https://static.igem.org/mediawiki/2021/9/9f/2021_brand_manual.pdf) provides historical guidance on unchanged logos and clear space; it is not represented here as a current blanket license.
 
-## Code, icons and sound
+## ImageGen interface artwork
 
-Application code, documentation, original interface SVG line icons, and the Web Audio sound synthesis code are covered by the MIT license in `LICENSE`. No League of Legends or Riot Games assets, sounds, or source code are included. The wheel interaction is inspired by [lolPing](https://github.com/darrenprx/lolPing).
+The following original PNG files were generated with the built-in OpenAI ImageGen tool on 13 October 2026 in one consistent iOS-inspired visual style. They contain no Apple logos or copied Apple assets:
+
+- `assets/ios-icons.png`: sixteen transparent glossy icon tiles in a four-by-four atlas (help, idea, caution, success, focus, break, home, resources, settings, language, link, calendar, registry, engineering, safety, community).
+- `assets/ios-background.png`: pearl, ice-blue and mint desktop background.
+- `assets/ios-panel.png`: transparent cool-white panel with a fine baked-in rim.
+- `assets/ios-button.png`: restrained blue button skin with a subtle baked-in highlight.
+
+CSS selects icon atlas cells and displays panels/buttons through nine raster viewports. Their source rectangles exclude stray pixels in the PNGs’ transparent outer margin; the PNG files themselves are unchanged. This keeps the generated corners intact when a button becomes wider. Small controls also use the same PNG skins. Code lays out real text and interactive controls; it does not draw icons, gradients, borders, shadows or button artwork. Selected states use the blue skin; keyboard focus is also indicated by text underlining. Gemy is animated through position and rotation, without redrawing the character.
+
+These original interface PNG assets, application code, documentation, and Web Audio sound synthesis code are covered by the MIT license in `LICENSE`, subject to any third-party rights. This does not extend the license to Gemy or the official iGEM logo.
+
+No League of Legends or Riot Games assets, sounds, or source code are included. The wheel interaction is inspired by [lolPing](https://github.com/darrenprx/lolPing).
 
 `docs/preview.png` and `docs/wheel.png` are screenshots of this application. Their embedded Gemy and iGEM artwork remains subject to the exclusions above.
 
-For brand or artwork concerns, please open an issue in this repository. The companion files can be replaced without changing application code.
+For brand or artwork concerns, please open an issue in this repository. The companion and skin files can be replaced without changing application logic.
+
+The final button and panel generation prompts are recorded in [docs/design-prompts.md](docs/design-prompts.md).
