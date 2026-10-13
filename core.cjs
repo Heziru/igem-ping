@@ -10,6 +10,7 @@ const DEFAULT_SETTINGS = Object.freeze({
 });
 
 const PING_IDS = Object.freeze(['help', 'idea', 'caution', 'success', 'focus', 'break']);
+const WHEEL_VIEWS = Object.freeze(['guide', 'resources', 'signals', 'preferences']);
 const LINKS = Object.freeze({
   competition: 'https://competition.igem.org/',
   registry: 'https://registry.igem.org/',
@@ -91,6 +92,6 @@ function timerFinished(timer, now = Date.now()) {
 }
 
 module.exports = {
-  DEFAULT_SETTINGS, PING_IDS, LINKS, validMinutes, sanitizeSettings,
+  DEFAULT_SETTINGS, PING_IDS, WHEEL_VIEWS, LINKS, validMinutes, sanitizeSettings,
   clampPosition, overlayPlacement, createTimer, timerFinished,
 };

@@ -1,4 +1,4 @@
-import { PINGS, t, applyState, applyImageSkins } from './shared.js';
+import { PINGS, t, applyState } from './shared.js';
 
 const api = window.igem;
 const pet = document.querySelector('#pet');
@@ -14,19 +14,17 @@ function updateText() {
   pet.querySelector('img').alt = t('iGEM Ping companion', 'iGEM Ping 桌宠');
   speech.textContent = activePing ? t(activePing.en, activePing.zh) : t('Your iGEM guide', '点我玩转 iGEM');
   updateCountdown();
-  applyImageSkins();
 }
 
 function updateCountdown() {
   const endsAt = window.appState?.timer?.endsAt;
   const hasTimer = Number.isFinite(endsAt);
-  speech.hidden = hasTimer && !activePing;
+  speech.hidden = !activePing;
   focusBadge.hidden = !hasTimer || Boolean(activePing);
   if (focusBadge.hidden) return;
   const seconds = Math.max(0, Math.ceil((endsAt - Date.now()) / 1000));
   const time = `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
   focusBadge.textContent = `${t('FOCUS', '专注')} ${time}`;
-  applyImageSkins();
   focusBadge.setAttribute('aria-label', `${t('Focus time remaining', '专注剩余时间')} ${time}`);
 }
 
@@ -90,7 +88,7 @@ pet.addEventListener('click', (event) => {
 });
 pet.addEventListener('contextmenu', (event) => {
   event.preventDefault();
-  api?.showSettings();
+  api?.openWheel('preferences');
 });
 document.addEventListener('pointermove', (event) => {
   if (!pointer) api?.setPetInteractive(Boolean(event.target.closest('#pet')));

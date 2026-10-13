@@ -1,32 +1,18 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
-  <title>iGEM Ping Wheel</title>
-  <link rel="stylesheet" href="shared.css">
-  <link rel="stylesheet" href="overlay.css">
-</head>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><title>iGEM Ping Wheel</title><link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="overlay.css"></head>
 <body class="overlay-page">
-  <main id="wheel" class="ping-wheel" aria-label="Official iGEM guide" hidden>
-    <div class="wheel-modes" role="group" aria-label="Wheel mode">
-      <button id="mode-guide" class="mode-button active" type="button" aria-pressed="true">iGEM Guide</button>
-      <button id="mode-signals" class="mode-button" type="button" aria-pressed="false">Signals</button>
-    </div>
-    <div id="wheel-options" class="wheel-options"></div>
-    <button id="wheel-cancel" class="wheel-cancel" type="button" aria-label="Close ping wheel" title="Close ping wheel">
-      <img src="../assets/pet.png" alt="" draggable="false">
-      <span id="wheel-cancel-label">Close</span>
-    </button>
-    <p id="wheel-hint" class="wheel-hint" role="status" aria-live="polite">Official iGEM links · 1–6 · Esc to close</p>
-  </main>
-  <div id="ping-marker" class="ping-marker" role="status" aria-live="assertive" hidden>
-    <div class="ping-body">
-      <span id="ping-symbol" class="ping-symbol" aria-hidden="true"></span>
-      <span id="ping-label" class="ping-label"></span>
-    </div>
-  </div>
-  <script type="module" src="overlay.js"></script>
-</body>
-</html>
+<main id="wheel" class="ping-wheel" aria-label="iGEM wheel" hidden>
+ <div class="wheel-disc" aria-hidden="true"><span></span><span></span><span></span></div>
+ <nav class="wheel-modes" aria-label="Wheel mode">
+  <button id="mode-guide" data-view="guide" class="mode-button active" aria-pressed="true">iGEM</button>
+  <button id="mode-resources" data-view="resources" class="mode-button" aria-pressed="false">Explore</button>
+  <button id="mode-signals" data-view="signals" class="mode-button" aria-pressed="false">Signals</button>
+  <button id="mode-preferences" data-view="preferences" class="mode-button" aria-pressed="false">Settings</button>
+ </nav>
+ <div id="wheel-options"></div>
+ <button id="wheel-cancel" class="wheel-cancel" aria-label="Close wheel"><img src="../assets/pet.png" alt="" draggable="false"><span id="wheel-cancel-label">Gemy</span><small id="center-note">Close</small></button>
+ <button id="resource-next" class="resource-next" hidden>More resources · 1 / 2</button>
+ <div class="wheel-footer"><p id="wheel-detail"></p><p id="wheel-hint" role="status" aria-live="polite"></p></div>
+</main>
+<div id="ping-marker" class="ping-marker" role="status" aria-live="assertive" hidden><div class="ping-body"><span id="ping-symbol" class="ping-symbol"></span><span id="ping-label" class="ping-label"></span></div></div>
+<script type="module" src="overlay.js"></script></body></html>

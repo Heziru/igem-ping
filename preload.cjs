@@ -13,12 +13,9 @@ function subscribe(channel, callback) {
 contextBridge.exposeInMainWorld('igem', Object.freeze({
   getState: () => ipcRenderer.invoke('igem:get-state'),
   updateSettings: (patch) => ipcRenderer.invoke('igem:update-settings', patch),
-  openWheel: () => ipcRenderer.invoke('igem:open-wheel'),
+  openWheel: (view) => ipcRenderer.invoke('igem:open-wheel', view),
   ping: (id) => ipcRenderer.invoke('igem:ping', id),
   closeWheel: () => ipcRenderer.invoke('igem:close-wheel'),
-  showSettings: () => ipcRenderer.invoke('igem:show-settings'),
-  minimizeSettings: () => ipcRenderer.invoke('igem:minimize-settings'),
-  hideSettings: () => ipcRenderer.invoke('igem:hide-settings'),
   openLink: (key) => ipcRenderer.invoke('igem:open-link', key),
   startTimer: (minutes) => ipcRenderer.invoke('igem:start-timer', minutes),
   stopTimer: () => ipcRenderer.invoke('igem:stop-timer'),

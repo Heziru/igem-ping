@@ -21,7 +21,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 Scope: This license applies to the project's source code, documentation,
-and original interface PNG artwork identified in ASSETS.md.
-Official iGEM logos, mascots, trademarks, and other third-party artwork are
-excluded. Their presence in this repository does not grant rights under this
-license. See ASSETS.md for asset sources and applicable terms.
+and original CSS/SVG interface graphics identified in ASSETS.md.
+Gemy artwork and adaptations, official iGEM logos, mascots, trademarks, and
+other third-party artwork are excluded. Their presence in this repository
+does not grant rights under this license. See ASSETS.md for asset sources
+and applicable terms.

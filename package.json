@@ -1,6 +1,6 @@
 {
   "name": "igem-ping",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Gemy guides every iGEMer to official timelines, judging, uploads and past projects, with desktop pings and focus time.",
   "main": "main.cjs",
   "author": "iGEM Ping contributors",
@@ -19,14 +19,26 @@
   "build": {
     "appId": "org.igemping.desktop",
     "productName": "iGEM Ping",
-    "directories": { "output": "release" },
-    "files": ["main.cjs", "preload.cjs", "core.cjs", "src/**/*", "assets/**/*", "LICENSE", "ASSETS.md"],
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "core.cjs",
+      "src/**/*",
+      "assets/**/*",
+      "LICENSE",
+      "ASSETS.md"
+    ],
     "win": {
       "target": "portable",
       "icon": "assets/icon.png",
       "artifactName": "iGEM-Ping-${version}-win-${arch}.${ext}",
       "signExecutable": false
     },
-    "portable": { "requestExecutionLevel": "user" }
+    "portable": {
+      "requestExecutionLevel": "user"
+    }
   }
 }

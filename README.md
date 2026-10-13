@@ -2,21 +2,18 @@
 
 [简体中文](README.zh-CN.md)
 
-A little desktop companion for iGEMers. Keep the iGEM mascot Gemy nearby, find the official page you need from a desktop wheel, and make room for focus and breaks.
+A small desktop launcher for iGEMers. Click Gemy to open a wheel of official links, local signals, and preferences.
 
-![iGEM Ping desktop companion and settings](docs/preview.png)
+![iGEM Ping desktop wheel](docs/wheel.png)
 
 ## What it does
 
-- Six official shortcuts in the default **iGEM Guide** wheel: **Timeline**, **Judge handbook**, **Submission guides**, **Past teams**, **Start here**, and **My deliverables**.
-- A separate **Signals** mode with six local signals: **Need a hand**, **New idea**, **Check this**, **It worked!**, **Focus time**, and **Take a break**.
-- A floating companion you can drag around your desktop.
-- A desktop wheel at your cursor, plus a tray menu for quick access.
-- A focus timer from 1 to 180 minutes.
-- English by default, with a Simplified Chinese option.
-- Sound, reduced motion, and companion size preferences, saved on your computer.
-- Shortcuts to official iGEM resources in your default browser.
-- An iOS-inspired ImageGen PNG skin for icons, backgrounds, panels, and buttons. Labels remain real text that assistive technology can read; controls keep accessible names and keyboard interaction.
+- Gemy stays on your desktop as a draggable launcher. The wheel contains the app's controls; there is no separate dashboard window.
+- The default **iGEM** navigation offers **Timeline**, **Judge handbook**, **Submission guides**, **Past teams**, **Start here**, and **My deliverables**.
+- **Explore** adds 12 official links across pages, including Wiki editing and uploads, project archives, and competition resources.
+- **Signals** offers six local pings: **Need a hand**, **New idea**, **Check this**, **It worked!**, **Focus time**, and **Take a break**.
+- **Settings** contains language, sound, reduced motion, companion size, a 25-minute focus toggle, and quit.
+- English is the default language; Simplified Chinese is available. Preferences are saved on your computer.
 
 This is an independent community project for everyone in iGEM. It is not an official iGEM application or an endorsement by the iGEM Foundation. Artwork sources and terms are listed in [ASSETS.md](ASSETS.md).
 
@@ -31,10 +28,13 @@ The packaged target is Windows x64. macOS and Linux builds are not provided or t
 - **Ctrl + Alt + G:** open the wheel at the cursor, starting with official navigation.
 - **Ctrl + Alt + P:** show or hide the companion.
 - **Drag the companion:** move it.
-- **Right-click the companion:** open settings.
-- **Tray menu:** open settings, access the wheel, or quit.
+- **Click Gemy:** open the navigation wheel.
+- **Right-click Gemy:** open the **Settings** wheel.
+- **Tray menu:** access the wheel or quit.
 
-Click the companion to open **iGEM Guide**, then choose an official shortcut to open its page in your default browser. Switch the wheel to **Signals** for local animations. The **1–6** keys select an item in the current mode, and **Esc** closes the wheel. Use the focus timer in settings to start a session. If another application already owns a shortcut, use the companion or tray controls.
+Choose an official shortcut to open its page in your default browser. Use **Explore** to browse the additional links, **Signals** for local animations, or **Settings** to change settings. The **1–6** keys select an item on the current wheel page, and **Esc** closes the wheel. If another application already owns a shortcut, use Gemy or the tray menu.
+
+In **Settings**, the focus control starts a 25-minute session or ends the current session. Gemy shows the countdown and a break ping appears when time is up. Quitting the app ends the session.
 
 Pings appear locally. People watching a whole-screen share can see them; sharing only another application's window does not include the overlay. There are no shared rooms or pings sent to teammates. Exclusive fullscreen applications may cover the overlay.
 
@@ -49,7 +49,7 @@ The six default shortcuts appear in this order:
 5. **Start here:** [the official starting-a-team guide](https://competition.igem.org/about/starting-a-team).
 6. **My deliverables:** [your team's deliverables dashboard](https://teams.igem.org/go/deliverables), where you can check submission status and deadlines after signing in and selecting your team.
 
-The resources page also offers [Wiki getting started](https://teams.igem.org/go/deliverables/wiki/getting-started) and [Wiki asset uploads](https://teams.igem.org/go/deliverables/wiki/uploads), both requiring an iGEM login and team selection, plus [Video Universe](https://video.igem.org/) for video and audio. Uploading media requires the appropriate account access. [Phoenix project search](https://community.igem.org/projects/phoenix-project) is another source of inspiration, with coverage through **2022** only; use the all-years directory for later teams.
+The **Explore** wheel also offers [Wiki getting started](https://teams.igem.org/go/deliverables/wiki/getting-started) and [Wiki asset uploads](https://teams.igem.org/go/deliverables/wiki/uploads), both requiring an iGEM login and team selection, plus [Video Universe](https://video.igem.org/) for video and audio. Uploading media requires the appropriate account access. [Phoenix project search](https://community.igem.org/projects/phoenix-project) is another source of inspiration, with coverage through **2022** only; use the all-years directory for later teams.
 
 Uploading a wiki asset and submitting a competition deliverable are separate steps. Wiki source belongs in your team's iGEM GitLab repository; images, documents, and fonts use Wiki Uploads; video and audio use Video Universe. Follow the relevant official guide for each submission.
 

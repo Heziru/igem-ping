@@ -4,7 +4,8 @@ const { app, BrowserWindow, Menu, Tray, globalShortcut, ipcMain, screen, shell, 
 const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
-const { DEFAULT_SETTINGS, PING_IDS, LINKS, sanitizeSettings, clampPosition, overlayPlacement, createTimer, timerFinished } = require('./core.cjs');
+const { DEFAULT_SETTINGS, PING_IDS, WHEEL_VIEWS, LINKS, sanitizeSettings, clampPosition, overlayPlacement, createTimer, timerFinished } = require('./core.cjs');
+const PET_SIZE = Object.freeze({ width: 160, height: 190 });
 
 app.setName('iGEM Ping');
 if (process.platform === 'win32') app.setAppUserModelId('org.igem.community.ping');
@@ -72,7 +73,7 @@ function createWindow(role, options) {
       webSecurity: true,
       webviewTag: false,
       zoomMode: role === 'overlay' ? 'isolated' : 'default',
-      backgroundThrottling: role === 'settings',
+      backgroundThrottling: false,
     },
   });
   windows[role] = window;
@@ -87,27 +88,14 @@ function createWindow(role, options) {
   return window;
 }
 
-function showSettings() {
-  if (windows.settings.isMinimized()) windows.settings.restore();
-  windows.settings.show();
-  windows.settings.focus();
-}
-
-function hideSettings() {
-  if (tray) windows.settings.hide();
-  else app.quit();
-}
-
 function updateTray() {
   if (!tray) return;
   const zh = settings.language === 'zh';
   tray.setContextMenu(Menu.buildFromTemplate([
-    { label: zh ? '打开 iGEM Ping' : 'Open iGEM Ping', click: showSettings },
-    { label: zh ? '打开 iGEM 导航' : 'Open iGEM guide', accelerator: 'Control+Alt+G', click: openWheel },
+    { label: zh ? '打开 iGEM 导航' : 'Open iGEM guide', accelerator: 'Control+Alt+G', click: () => openWheel() },
+    { label: zh ? '设置' : 'Preferences', click: () => openWheel('preferences') },
     { label: zh ? '显示桌宠' : 'Show companion', type: 'checkbox', checked: settings.petVisible,
       click: () => applySettings({ petVisible: !settings.petVisible }) },
-    { type: 'separator' },
-    { label: zh ? 'iGEM 官方网站' : 'iGEM official website', click: () => openLink('community') },
     { type: 'separator' },
     { label: zh ? '退出' : 'Quit', click: () => app.quit() },
   ]));
@@ -115,6 +103,8 @@ function updateTray() {
 
 function applySettings(patch) {
   settings = sanitizeSettings(patch, settings);
+  // Without a tray, Gemy is the persistent entry point back into the wheel.
+  if (!tray) settings.petVisible = true;
   if (settings.petVisible) windows.pet.showInactive();
   else windows.pet.hide();
   savePreferences();
@@ -136,17 +126,24 @@ function placeOverlay(cursor) {
   overlayAnchor = placement.anchor;
 }
 
-function openWheel() {
-  if (windows.overlay.webContents.isLoading()) return;
+function openWheel(view = 'guide') {
+  if (!WHEEL_VIEWS.includes(view)) return false;
+  if (quitting || !windows.overlay || windows.overlay.isDestroyed()) return false;
+  if (windows.overlay.webContents.isLoading()) {
+    windows.overlay.webContents.once('did-finish-load', () => openWheel(view));
+    return true;
+  }
   clearTimeout(overlayTimeout);
-  placeOverlay(screen.getCursorScreenPoint());
-  overlayMode = 'wheel';
-  windows.overlay.setFocusable(true);
-  windows.overlay.setIgnoreMouseEvents(false);
-  send(windows.overlay, 'igem:wheel', { mode: 'wheel', x: 280, y: 280 });
+  if (overlayMode !== 'wheel' || !windows.overlay.isVisible()) {
+    placeOverlay(screen.getCursorScreenPoint());
+    overlayMode = 'wheel';
+    windows.overlay.setFocusable(true);
+    windows.overlay.setIgnoreMouseEvents(false);
+  }
+  send(windows.overlay, 'igem:wheel', { mode: 'wheel', view, x: 280, y: 280 });
   windows.overlay.show();
   windows.overlay.focus();
-  overlayTimeout = setTimeout(closeOverlay, 20_000);
+  return true;
 }
 
 function ping(id) {
@@ -208,28 +205,25 @@ function endDrag() {
 }
 
 function registerIPC() {
-  const all = ['settings', 'pet', 'overlay'];
+  const all = ['pet', 'overlay'];
   handle('get-state', all, state);
-  handle('update-settings', ['settings', 'pet'], applySettings);
+  handle('update-settings', all, applySettings);
   handle('open-wheel', all, openWheel);
   handle('ping', all, ping);
   handle('close-wheel', ['overlay'], closeOverlay);
-  handle('show-settings', all, showSettings);
-  handle('minimize-settings', ['settings'], () => windows.settings.minimize());
-  handle('hide-settings', ['settings'], hideSettings);
   handle('open-link', all, openLink);
-  handle('start-timer', ['settings', 'pet'], (minutes) => {
+  handle('start-timer', all, (minutes) => {
     timer = createTimer(minutes);
     broadcast();
     send(windows.pet, 'igem:pet', { id: 'focus' });
     return state();
   });
-  handle('stop-timer', ['settings', 'pet'], () => {
+  handle('stop-timer', all, () => {
     timer = { endsAt: null, durationMs: 0 };
     broadcast();
     return state();
   });
-  handle('quit', ['settings', 'pet'], () => app.quit());
+  handle('quit', all, () => app.quit());
 
   ipcMain.on('igem:drag-start', (event) => {
     if (!trustedSender(event, ['pet'])) return;
@@ -241,7 +235,7 @@ function registerIPC() {
     if (!trustedSender(event, ['pet']) || !drag) return;
     const cursor = screen.getCursorScreenPoint();
     const position = clampPosition({ x: drag.x + cursor.x - drag.cursor.x, y: drag.y + cursor.y - drag.cursor.y },
-      { width: 240, height: 270 }, screen.getDisplayNearestPoint(cursor).workArea);
+      PET_SIZE, screen.getDisplayNearestPoint(cursor).workArea);
     windows.pet.setPosition(position.x, position.y);
   });
   ipcMain.on('igem:drag-end', (event) => {
@@ -255,20 +249,9 @@ function registerIPC() {
 
 function recoverWindows() {
   endDrag();
-  for (const role of ['pet', 'settings']) {
-    const window = windows[role];
-    const bounds = window.getBounds();
-    const workArea = screen.getDisplayMatching(bounds).workArea;
-    if (role === 'settings') {
-      window.setMinimumSize(Math.min(900, workArea.width), Math.min(680, workArea.height));
-      bounds.width = Math.min(Math.max(bounds.width, 900), workArea.width);
-      bounds.height = Math.min(Math.max(bounds.height, 680), workArea.height);
-    }
-    const position = clampPosition(bounds, bounds, workArea);
-    if (role === 'settings') window.setBounds({ ...bounds, ...position });
-    else window.setPosition(position.x, position.y);
-    if (role === 'pet') petPosition = position;
-  }
+  const bounds = windows.pet.getBounds();
+  petPosition = clampPosition(bounds, PET_SIZE, screen.getDisplayMatching(bounds).workArea);
+  windows.pet.setPosition(petPosition.x, petPosition.y);
   closeOverlay();
   savePreferences();
 }
@@ -280,30 +263,15 @@ async function start() {
   session.defaultSession.setPermissionCheckHandler(() => false);
   Menu.setApplicationMenu(null);
 
-  const primaryArea = screen.getPrimaryDisplay().workArea;
-  createWindow('settings', {
-    title: 'iGEM Ping',
-    width: Math.min(1120, primaryArea.width), height: Math.min(800, primaryArea.height),
-    minWidth: Math.min(900, primaryArea.width), minHeight: Math.min(680, primaryArea.height),
-    frame: false, hasShadow: false,
-  });
-  windows.settings.once('ready-to-show', showSettings);
-  windows.settings.on('close', (event) => {
-    if (!quitting) {
-      event.preventDefault();
-      hideSettings();
-    }
-  });
-
   const workArea = petPosition
     ? screen.getDisplayNearestPoint(petPosition).workArea
     : screen.getPrimaryDisplay().workArea;
   petPosition = clampPosition(petPosition || {
-    x: workArea.x + workArea.width - 264,
-    y: workArea.y + workArea.height - 294,
-  }, { width: 240, height: 270 }, workArea);
+    x: workArea.x + workArea.width - PET_SIZE.width - 24,
+    y: workArea.y + workArea.height - PET_SIZE.height - 24,
+  }, PET_SIZE, workArea);
   createWindow('pet', {
-    title: 'iGEM Ping Companion', width: 240, height: 270, ...petPosition,
+    title: 'iGEM Ping Companion', ...PET_SIZE, ...petPosition,
     transparent: true, frame: false, resizable: false, maximizable: false,
     skipTaskbar: true, alwaysOnTop: true, focusable: false, hasShadow: false,
   });
@@ -323,7 +291,11 @@ async function start() {
   windows.overlay.on('close', (event) => {
     if (!quitting) { event.preventDefault(); closeOverlay(); }
   });
-  windows.overlay.on('blur', () => { if (overlayMode === 'wheel') closeOverlay(); });
+  windows.overlay.on('blur', () => {
+    setImmediate(() => {
+      if (!quitting && overlayMode === 'wheel' && !windows.overlay.isDestroyed() && !windows.overlay.isFocused()) closeOverlay();
+    });
+  });
   windows.overlay.webContents.on('before-input-event', (event, input) => {
     if (input.key === 'Escape') { event.preventDefault(); closeOverlay(); }
   });
@@ -331,12 +303,18 @@ async function start() {
   registerIPC();
   const icon = nativeImage.createFromPath(path.join(__dirname, 'assets', 'icon.png'));
   if (!icon.isEmpty()) {
-    tray = new Tray(icon.resize({ width: 20, height: 20 }));
-    tray.setToolTip('iGEM Ping');
-    tray.on('double-click', showSettings);
-    updateTray();
+    try {
+      tray = new Tray(icon.resize({ width: 20, height: 20 }));
+      tray.setToolTip('iGEM Ping');
+      tray.on('double-click', () => openWheel());
+      updateTray();
+    } catch {
+      tray = null;
+      console.warn('The system tray is unavailable. Gemy will remain visible.');
+    }
   }
-  shortcuts.wheel = globalShortcut.register('Control+Alt+G', openWheel);
+  if (!tray && !settings.petVisible) applySettings({ petVisible: true });
+  shortcuts.wheel = globalShortcut.register('Control+Alt+G', () => openWheel());
   shortcuts.pet = globalShortcut.register('Control+Alt+P', () => applySettings({ petVisible: !settings.petVisible }));
   broadcast();
   timerInterval = setInterval(checkTimer, 1000);
@@ -348,8 +326,8 @@ async function start() {
 if (!app.requestSingleInstanceLock()) {
   app.quit();
 } else {
-  app.on('second-instance', () => { if (windows.settings) showSettings(); });
-  app.on('activate', () => { if (windows.settings) showSettings(); });
+  app.on('second-instance', () => openWheel());
+  app.on('activate', () => openWheel());
   app.on('window-all-closed', () => { if (!tray) app.quit(); });
   app.on('before-quit', () => {
     quitting = true;
