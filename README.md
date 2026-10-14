@@ -2,15 +2,15 @@
 
 [简体中文](README.zh-CN.md)
 
-A small desktop launcher for iGEMers. Click Gemy to open a wheel of official links, local signals, and preferences.
+A desktop companion for iGEMers, with official competition links and keyword search across indexed Project Description pages.
 
 ![iGEM Ping desktop wheel](docs/wheel.png)
 
 ## What it does
 
-- Gemy stays on your desktop as a draggable launcher. The wheel contains the app's controls; there is no separate dashboard window.
-- The default **iGEM** navigation offers **Timeline**, **Judge handbook**, **Submission guides**, **Past teams**, **Start here**, and **My deliverables**.
-- **Explore** adds 12 official links across pages, including Wiki editing and uploads, project archives, and competition resources.
+- Click Gemy once to open the wheel and again to close it. Drag it anywhere in the desktop work area; it stays on screen and gently rebounds into place at an edge.
+- The default **iGEM** navigation offers **Timeline**, **Judge handbook**, **Submission guides**, **Project search**, **Start here**, and **My deliverables**.
+- **Explore** adds 12 official links across pages, including **Medal criteria**, **Special awards**, Wiki editing and uploads, and project archives.
 - **Signals** offers six local pings: **Need a hand**, **New idea**, **Check this**, **It worked!**, **Focus time**, and **Take a break**.
 - **Settings** contains language, sound, reduced motion, companion size, a 25-minute focus toggle, and quit.
 - English is the default language; Simplified Chinese is available. Preferences are saved on your computer.
@@ -27,8 +27,8 @@ The packaged target is Windows x64. macOS and Linux builds are not provided or t
 
 - **Ctrl + Alt + G:** open the wheel at the cursor, starting with official navigation.
 - **Ctrl + Alt + P:** show or hide the companion.
-- **Drag the companion:** move it.
-- **Click Gemy:** open the navigation wheel.
+- **Drag the companion:** move it. Release near a screen edge to dock with a small inward rebound. Reduced motion disables the rebound.
+- **Click Gemy:** toggle the navigation wheel. The wheel leaves the companion accessible.
 - **Right-click Gemy:** open the **Settings** wheel.
 - **Tray menu:** access the wheel or quit.
 
@@ -45,7 +45,7 @@ The six default shortcuts appear in this order:
 1. **Timeline:** [competition deliverables and deadlines](https://competition.igem.org/deliverables/).
 2. **Judge handbook:** [the official judging handbook](https://competition.igem.org/judging/handbook), covering the judging process and reference material for judges.
 3. **Submission guides:** [public deliverable guides](https://competition.igem.org/deliverables/guides), so you can read the instructions before signing in.
-4. **Past teams:** [the all-years team directory](https://teams.igem.org/list?year=all). Search by team name, institution, or region, then open a team's wiki.
+4. **Project search:** search the bundled Project Description index inside the app. Its **Official team directory** button opens the [all-years directory](https://teams.igem.org/list?year=all).
 5. **Start here:** [the official starting-a-team guide](https://competition.igem.org/about/starting-a-team).
 6. **My deliverables:** [your team's deliverables dashboard](https://teams.igem.org/go/deliverables), where you can check submission status and deadlines after signing in and selecting your team.
 
@@ -55,11 +55,25 @@ Uploading a wiki asset and submitting a competition deliverable are separate ste
 
 These shortcuts open the live official websites. **Timeline** opens public requirements and dates; **My deliverables** opens your team's status page in the browser. The app does not sign in for you, read your team's dashboard, or synchronize your submission status.
 
+## Project Description search
+
+![Project Description search](docs/search.png)
+
+The 0.3.0 snapshot includes **3,223 descriptions from 2008–2025**. Coverage is partial, especially in early years; 2026 is not yet included.
+
+Open **Project search** in the main wheel and type a keyword such as **IBD**. Results list the team, year, a highlighted passage from its indexed Project Description, and a button to read the original official wiki. You can filter by year and page through results.
+
+Search is local and needs no account or API key. It matches all entered keywords, case-insensitively; Latin keywords use whole-word matching, so IBD does not accidentally match the gene name ribD. It does not infer synonyms or translate queries. A mention is evidence that a description discusses the term, not a claim that the term is the team's main research topic.
+
+The bundled index is a dated snapshot, **not a complete archive of every team**. **Index coverage** shows the actual years and indexed team counts. Missing pages, unfilled templates and unavailable years are excluded, not treated as negative results. The index searches Description body text, not team-directory metadata, project abstracts substituted for descriptions, or the entire wiki. Sources, limitations and rebuild instructions are in [data/README.md](data/README.md).
+
+The Explore wheel also opens the official [medal criteria](https://competition.igem.org/judging/awards/medals) and [special-award criteria](https://competition.igem.org/judging/awards/special).
+
 ## Privacy
 
 The application does not require an account, collect telemetry, or make background network requests. Preferences stay in Electron's local user-data directory on your computer. Opening an official resource deliberately launches its HTTPS page in your browser; that website's login requirements and privacy practices then apply. Browser sign-in stays in your browser.
 
-Installing development dependencies and downloading releases use npm and GitHub as usual.
+Installing development dependencies, rebuilding the project index, and downloading releases use the relevant public websites. User searches are not sent to a server.
 
 ## Build from source
 

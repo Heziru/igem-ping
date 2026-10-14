@@ -29,6 +29,7 @@ const LINKS = Object.freeze({
   previousYears: 'https://competition.igem.org/about/previous-years',
   competitionCycle: 'https://competition.igem.org/about/navigating-igem',
   medals: 'https://competition.igem.org/judging/awards/medals',
+  specialAwards: 'https://competition.igem.org/judging/awards/special',
   rules: 'https://competition.igem.org/about/rules-and-policies',
   engineering: 'https://technology.igem.org/engineering',
   jamboree: 'https://jamboree.igem.org/',
@@ -65,11 +66,46 @@ function clampPosition(position, size, workArea) {
   };
 }
 
-function overlayPlacement(cursor, workArea) {
+function petDropPlacement(position, size, workArea) {
+  const settled = clampPosition(position, size, workArea);
+  const offset = { x: 0, y: 0 };
+  for (const [axis, dimension] of [['x', 'width'], ['y', 'height']]) {
+    const minimum = workArea[axis];
+    const maximum = Math.max(minimum, minimum + workArea[dimension] - size[dimension]);
+    if (settled[axis] - minimum <= 8) {
+      settled[axis] = minimum;
+      offset[axis] = 6;
+    } else if (maximum - settled[axis] <= 8) {
+      settled[axis] = maximum;
+      offset[axis] = -6;
+    }
+  }
+  return {
+    position: settled,
+    // The brief rebound always moves inward; neither frame may leave the display.
+    rebound: clampPosition({ x: settled.x + offset.x, y: settled.y + offset.y }, size, workArea),
+  };
+}
+
+function overlayPlacement(cursor, workArea, avoidBounds) {
   const side = Math.max(1, Math.floor(Math.min(560, workArea.width, workArea.height)));
   const scale = side / 560;
-  const position = clampPosition({ x: cursor.x - side / 2, y: cursor.y - side / 2 },
+  let position = clampPosition({ x: cursor.x - side / 2, y: cursor.y - side / 2 },
     { width: side, height: side }, workArea);
+  if (avoidBounds) {
+    const preferred = position;
+    const candidates = [preferred,
+      { x: avoidBounds.x - side - 12, y: preferred.y },
+      { x: avoidBounds.x + avoidBounds.width + 12, y: preferred.y },
+      { x: preferred.x, y: avoidBounds.y - side - 12 },
+      { x: preferred.x, y: avoidBounds.y + avoidBounds.height + 12 },
+    ].map((point) => clampPosition(point, { width: side, height: side }, workArea));
+    const overlap = (point) => Math.max(0, Math.min(point.x + side, avoidBounds.x + avoidBounds.width) - Math.max(point.x, avoidBounds.x))
+      * Math.max(0, Math.min(point.y + side, avoidBounds.y + avoidBounds.height) - Math.max(point.y, avoidBounds.y));
+    candidates.sort((a, b) => overlap(a) - overlap(b)
+      || Math.hypot(a.x - preferred.x, a.y - preferred.y) - Math.hypot(b.x - preferred.x, b.y - preferred.y));
+    [position] = candidates;
+  }
   return {
     ...position,
     width: side, height: side, scale,
@@ -93,5 +129,5 @@ function timerFinished(timer, now = Date.now()) {
 
 module.exports = {
   DEFAULT_SETTINGS, PING_IDS, WHEEL_VIEWS, LINKS, validMinutes, sanitizeSettings,
-  clampPosition, overlayPlacement, createTimer, timerFinished,
+  clampPosition, petDropPlacement, overlayPlacement, createTimer, timerFinished,
 };

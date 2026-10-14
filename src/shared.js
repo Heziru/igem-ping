@@ -2,7 +2,7 @@ export const GUIDES = [
   { id:'progress', icon:'calendar', en:'Timeline', zh:'赛程与截止', detailEn:'See this season’s deliverables and upcoming deadlines.', detailZh:'查看本赛季的比赛交付物、时间线与截止日期。', linkKey:'deliverables' },
   { id:'judging', icon:'book', en:'Judge handbook', zh:'评审手册', detailEn:'Read the official handbook to understand the judging process.', detailZh:'阅读官方评审手册，了解评审流程与评审员参考资料。', linkKey:'judging' },
   { id:'uploads', icon:'upload', en:'Submission guides', zh:'上传与提交指南', detailEn:'Check requirements and instructions for each deliverable.', detailZh:'查看各项提交物的要求与操作说明；“资源”轮盘另有 Wiki 素材上传入口。', linkKey:'uploads' },
-  { id:'projects', icon:'projects', en:'Past teams', zh:'历届队伍项目', detailEn:'Search all years by team, institution or region, then explore their project wikis.', detailZh:'按队名、学校或地区搜索全部年份队伍，进入项目 Wiki。', linkKey:'projects' },
+  { id:'projects', icon:'search', en:'Project search', zh:'项目关键词检索', detailEn:'Search indexed Project Description pages by keyword, with matching text and original sources.', detailZh:'输入关键词，检索已收录的历年 Project Description 正文，查看命中原文与来源。', linkKey:'projects' },
   { id:'start', icon:'compass', en:'Start here', zh:'新手入门', detailEn:'Plan your team, roles, project, lab space and funding.', detailZh:'从组队、分工、选题、实验空间和经费开始。', linkKey:'resources' },
   { id:'submissions', icon:'checklist', en:'My deliverables', zh:'我的提交进度', detailEn:'Sign in and select your team to check submission status and deadlines.', detailZh:'登录官方账号并选择队伍，查看提交状态和截止事项。', linkKey:'submissions' },
 ];
@@ -49,13 +49,13 @@ export const RESOURCES = [
  {id:'wikiUploads',icon:'upload',en:'Upload assets',zh:'素材上传',detailEn:'Activate your team wiki, then upload images, documents and fonts.',detailZh:'登录并激活队伍 Wiki 后，上传图片、文档与字体。'},
  {id:'video',icon:'video',en:'Video Universe',zh:'视频与音频',detailEn:'The official media platform. Follow the relevant submission guide.',detailZh:'官方媒体平台；请按对应交付物的提交指南操作。'},
  {id:'previousYears',icon:'projects',en:'Past seasons',zh:'历届赛事',detailEn:'Explore official competition archives by year.',detailZh:'按年份探索官方赛事档案。'},
- {id:'phoenix',icon:'search',en:'Project search',zh:'项目关键词',detailEn:'Phoenix searches historical project content through 2022.',detailZh:'Phoenix 历史项目内容检索，目前收录至 2022 年。'},
+ {id:'phoenix',icon:'search',en:'Phoenix archive',zh:'Phoenix 档案',detailEn:'Browse the official Phoenix project archive through 2022.',detailZh:'浏览官方 Phoenix 项目档案，目前收录至 2022 年。'},
  {id:'registry',icon:'registry',en:'Parts Registry',zh:'生物元件库',detailEn:'Explore synthetic biology parts in the official Registry.',detailZh:'在官方 Registry 查找合成生物学元件。'},
  {id:'competitionCycle',icon:'cycle',en:'Season guide',zh:'全年流程',detailEn:'Understand the stages of an iGEM season.',detailZh:'了解每个比赛阶段应当准备的事项。'},
- {id:'medals',icon:'medal',en:'Medal criteria',zh:'奖牌条件',detailEn:'Check official medal requirements alongside the handbook.',detailZh:'核对奖牌条件，并配合评审手册阅读。'},
+ {id:'medals',icon:'medal',en:'Medal criteria',zh:'奖牌标准',detailEn:'Check official medal requirements alongside the handbook.',detailZh:'核对奖牌条件，并配合评审手册阅读。'},
  {id:'engineering',icon:'cycle',en:'Engineering',zh:'工程周期',detailEn:'Design, build, test and learn.',detailZh:'设计、构建、测试与学习。'},
  {id:'safety',icon:'safety',en:'Safety',zh:'安全与责任',detailEn:'Read official safety and responsibility policies.',detailZh:'查阅官方安全与责任政策。'},
- {id:'community',icon:'community',en:'Community',zh:'iGEM 社区',detailEn:'Connect with the worldwide iGEM community.',detailZh:'了解全球 iGEM 社区。'},
+ {id:'specialAwards',icon:'medal',en:'Special awards',zh:'特殊奖项标准',detailEn:'Read the official special award criteria and requirements.',detailZh:'查阅官方特殊奖项的评审标准与要求。'},
  {id:'jamboree',icon:'compass',en:'Grand Jamboree',zh:'全球总决赛',detailEn:'Explore the annual gathering of the iGEM community.',detailZh:'了解 iGEM 年度盛会。'},
 ];
 export const t = (en, zh) => window.appState?.settings.language === 'zh' ? zh : en;

@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { DEFAULT_SETTINGS, LINKS, sanitizeSettings, clampPosition, overlayPlacement, createTimer, timerFinished } = require('../core.cjs');
+const { DEFAULT_SETTINGS, LINKS, sanitizeSettings, clampPosition, petDropPlacement, overlayPlacement, createTimer, timerFinished } = require('../core.cjs');
 
 test('preferences accept known values and ignore malformed or unknown input', () => {
   assert.deepEqual(sanitizeSettings(null), DEFAULT_SETTINGS);
@@ -44,6 +44,56 @@ test('a high-DPI 911×480 work area fits the entire wheel without changing logic
     assert.ok(located.anchor.y >= 120 && located.anchor.y <= 440);
   }
   assert.deepEqual(overlayPlacement({ x: 1010, y: 529 }, area).anchor, { x: 440, y: 440 });
+});
+
+test('dropping near a display edge docks gently while interior positions stay where dropped', () => {
+  const area = { x: -1920, y: -200, width: 1920, height: 1040 };
+  const size = { width: 160, height: 190 };
+  assert.deepEqual(petDropPlacement({ x: -1000, y: 300 }, size, area), {
+    position: { x: -1000, y: 300 }, rebound: { x: -1000, y: 300 },
+  });
+  assert.deepEqual(petDropPlacement({ x: -1915, y: 300 }, size, area), {
+    position: { x: -1920, y: 300 }, rebound: { x: -1914, y: 300 },
+  });
+  assert.deepEqual(petDropPlacement({ x: -1911, y: 300 }, size, area), {
+    position: { x: -1911, y: 300 }, rebound: { x: -1911, y: 300 },
+  });
+  assert.deepEqual(petDropPlacement({ x: 50, y: 1000 }, size, area), {
+    position: { x: -160, y: 650 }, rebound: { x: -166, y: 644 },
+  });
+  for (const point of [{ x: -3000, y: -500 }, { x: 50, y: 1000 }, { x: -1000, y: 300 }]) {
+    const { position, rebound } = petDropPlacement(point, size, area);
+    for (let amount = 0; amount <= 1; amount += 0.1) {
+      const frame = { x: position.x + (rebound.x - position.x) * amount,
+        y: position.y + (rebound.y - position.y) * amount };
+      assert.ok(frame.x >= area.x && frame.x + size.width <= area.x + area.width);
+      assert.ok(frame.y >= area.y && frame.y + size.height <= area.y + area.height);
+    }
+  }
+});
+
+test('the wheel avoids Gemy on either side, on negative displays and in a short work area', () => {
+  for (const area of [
+    { x: 0, y: 0, width: 1920, height: 1040 },
+    { x: -1920, y: -200, width: 1920, height: 1040 },
+    { x: 0, y: 0, width: 911, height: 480 },
+  ]) {
+    for (const x of [area.x, area.x + area.width - 160]) {
+      const pet = { x, y: area.y + 100, width: 160, height: 190 };
+      const wheel = overlayPlacement({ x: x + 80, y: pet.y + 95 }, area, pet);
+      assert.ok(wheel.x >= area.x && wheel.x + wheel.width <= area.x + area.width);
+      assert.ok(wheel.y >= area.y && wheel.y + wheel.height <= area.y + area.height);
+      assert.ok(wheel.x + wheel.width <= pet.x || wheel.x >= pet.x + pet.width
+        || wheel.y + wheel.height <= pet.y || wheel.y >= pet.y + pet.height);
+      assert.ok(wheel.anchor.x >= 120 && wheel.anchor.x <= 440);
+      assert.ok(wheel.anchor.y >= 120 && wheel.anchor.y <= 440);
+    }
+  }
+  const area = { x: 0, y: 0, width: 400, height: 400 };
+  const wheel = overlayPlacement({ x: 200, y: 200 }, area, { x: 120, y: 100, width: 160, height: 190 });
+  assert.equal(wheel.x, 0);
+  assert.equal(wheel.y, 0);
+  assert.equal(wheel.width, 400);
 });
 
 test('focus uses an absolute deadline, so a delayed tick still completes once', () => {

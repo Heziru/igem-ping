@@ -1,42 +1,23 @@
-# iGEM Ping 0.2.0 — Gemy and a desktop wheel
+# iGEM Ping 0.3.0 — Find past projects from your desktop
 
-Gemy is now the app's desktop launcher. Click it to open the wheel, drag it to move, or right-click it for **Settings**. The separate dashboard has been removed; navigation, signals, and settings all live in the wheel.
+Click Gemy to open the wheel, and click again to close it. Drag the companion anywhere inside your display's work area. Releasing it near an edge docks it with a gentle inward rebound; reduced motion disables the animation. Wheel buttons now use matching circular bubbles in every state.
 
-- Gemy has been redesigned as a 2D illustration, paired with a green wheel and thin line icons.
-- The default **iGEM** navigation keeps six official shortcuts: **Timeline**, **Judge handbook**, **Submission guides**, **Past teams**, **Start here**, and **My deliverables**.
-- **Explore** provides 12 additional official links across pages.
-- **Signals** offers six local pings for asking for help, sharing an idea, drawing attention, celebrating a result, focusing, or taking a break.
-- **Settings** controls language, sound, reduced motion, companion size, a 25-minute focus session, and quit.
-- **Ctrl + Alt + G** opens the wheel; **Ctrl + Alt + P** shows or hides Gemy. **1–6** selects an item on the current wheel page and **Esc** closes it.
-- English is the default language; Simplified Chinese is available. Preferences stay on your computer.
+**Project search** searches a bundled index of real **Project Description** body text. Enter a keyword such as **IBD** to see matching teams, years and highlighted original passages, then open the official wiki. Search is local, supports year filtering and pagination, and needs no account or API key. It matches all entered keywords; `IBD` does not match `ribD`.
 
-**Judge handbook** opens the [official judging handbook](https://competition.igem.org/judging/handbook). **Submission guides** opens the [public deliverable guides](https://competition.igem.org/deliverables/guides). **My deliverables** opens the [team deliverables dashboard](https://teams.igem.org/go/deliverables), where you sign in and select your team to check submission status and deadlines.
+This release bundles **3,223 descriptions from 2008–2025**; the literal query `IBD` matches **46 teams**. The 2026 season is not included.
 
-**Timeline** links to [competition deliverables and dates](https://competition.igem.org/deliverables/); **Past teams** opens the [all-years team directory](https://teams.igem.org/list?year=all); **Start here** opens the [official starter guide](https://competition.igem.org/about/starting-a-team).
+The index is a dated, partial snapshot. **Index coverage** reports the actual years and indexed team counts. Missing pages and unavailable years are not searched; a match shows that a description mentions the term, not necessarily that it is the project's main topic. See [data sources and coverage](https://github.com/Heziru/igem-ping/blob/main/data/README.md).
 
-The **Explore** wheel includes [Wiki getting started](https://teams.igem.org/go/deliverables/wiki/getting-started) and [Wiki Uploads](https://teams.igem.org/go/deliverables/wiki/uploads), which require an iGEM login and team selection, plus [Video Universe](https://video.igem.org/) and [Phoenix project search](https://community.igem.org/projects/phoenix-project). Phoenix covers projects through **2022** only. Uploading an asset and submitting a competition deliverable are separate steps.
+The **Explore** wheel includes direct links to the official [medal criteria](https://competition.igem.org/judging/awards/medals) and [special-award criteria](https://competition.igem.org/judging/awards/special), alongside Wiki editing, uploads and other resources. Timeline, judging handbook, submission guides and team deliverables remain available. Official login stays in your browser.
 
-Official links open live websites in your browser. The app does not read your login session or synchronize submission status. It has no account requirement, telemetry, background network requests, or online rooms. Pings are local and can be seen in a whole-screen share. Quitting the app ends an active focus session.
-
-Download the Windows x64 portable `.exe` below and open it to launch Gemy. No installation is required. The build is unsigned; Windows may show a publisher notice. macOS and Linux packages are not provided or tested.
-
-This is an independent community project, not an official iGEM application. Code is MIT licensed; Gemy and iGEM identity are excluded. See `ASSETS.md` for artwork sources and terms.
+Download the Windows x64 portable executable below. No installation is needed; the build is unsigned. macOS and Linux packages are not provided or tested. This is an independent community app. Code is MIT licensed; mascot and project-text sources have separate terms in ASSETS.md and data/README.md.
 
 ---
 
-0.2.0 将 Gemy 变成桌面启动图标。点击打开轮盘，拖动调整位置，右键打开**设置**。独立的平台页面已移除，导航、信号和设置都在轮盘中完成。
+左键点击 Gemy 打开轮盘，再点一次关闭。拖动时始终留在屏幕工作区内，靠边松手会贴边并轻微向内回弹；“减少动态”可关闭回弹。轮盘选项统一为圆形气泡，悬停和焦点保持同一边界。
 
-- Gemy 改为 2D 插画，轮盘和图标统一重新设计为绿色薄线风格。
-- 默认的 **iGEM** 导航保留六项官方入口：**赛程与截止、评审手册、上传与提交指南、历届队伍项目、新手入门、我的提交进度**。
-- **资源**分页提供另外 12 个官方入口；**信号**提供六种本地 Ping。
-- **设置**包含语言、声音、减少动态效果、桌宠尺寸、25 分钟专注开关和退出。
-- **Ctrl + Alt + G** 打开轮盘，**Ctrl + Alt + P** 显示或隐藏 Gemy；**1–6** 选择当前轮盘页中的项目，**Esc** 关闭。
-- 默认英文，可切换简体中文。偏好设置保存在本机，退出应用会结束当前专注。
+新增应用内 **Project Description 正文检索**。输入 **IBD** 等关键词即可列出命中的队伍、年份和高亮原文片段，并直接阅读官方 Wiki。支持年份筛选与翻页；本地搜索，无需账号、API Key，也不上传搜索词。多个关键词需全部命中，`IBD` 不会误命中 `ribD`。
 
-“评审手册”直达[官方评审手册](https://competition.igem.org/judging/handbook)；“上传与提交指南”打开[公开提交指南](https://competition.igem.org/deliverables/guides)；“我的提交进度”进入[团队提交面板](https://teams.igem.org/go/deliverables)，登录并选择队伍后查看状态和截止事项。
+本版收录 **2008–2025 年的 3,223 份项目描述**，`IBD` 可检索到 **46 支队伍**，暂未收录 2026 年。索引是带日期的部分快照，**不声称覆盖全部历史项目**。“查看收录范围”显示真实的年份和队伍数；缺页或无法取得的年份不会被当成“无相关项目”。正文提到某个词，也不等于该词一定是队伍的主要研究方向。完整来源见仓库 data/README.md。
 
-资源轮盘提供 Wiki 编辑与素材上传等入口，相关操作需要登录并选择队伍；上传素材不等于正式提交比赛交付物。Phoenix 项目搜索仅收录至 **2022 年**，较新的队伍请使用全年份队伍目录。
-
-所有官方入口都在浏览器中打开实时页面。应用无需账号，不读取登录会话、不同步后台状态，不收集遥测，也没有联机房间。Ping 仅在本机显示，可通过共享整个屏幕让伙伴看见。
-
-下载下方 Windows x64 便携版即可运行。版本尚未签名，Windows 可能显示发布者提示。代码采用 MIT 许可，Gemy 与 iGEM 标识的素材条款见 `ASSETS.md`。
+资源轮盘新增**特殊奖项标准**，同时保留**奖牌标准**和其他官方入口。下载下方 Windows x64 便携版即可运行。

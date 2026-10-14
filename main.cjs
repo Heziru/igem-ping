@@ -4,7 +4,8 @@ const { app, BrowserWindow, Menu, Tray, globalShortcut, ipcMain, screen, shell, 
 const fs = require('node:fs');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
-const { DEFAULT_SETTINGS, PING_IDS, WHEEL_VIEWS, LINKS, sanitizeSettings, clampPosition, overlayPlacement, createTimer, timerFinished } = require('./core.cjs');
+const { DEFAULT_SETTINGS, PING_IDS, WHEEL_VIEWS, LINKS, sanitizeSettings, clampPosition, petDropPlacement, overlayPlacement, createTimer, timerFinished } = require('./core.cjs');
+const { loadProjectIndex } = require('./project-search.cjs');
 const PET_SIZE = Object.freeze({ width: 160, height: 190 });
 
 app.setName('iGEM Ping');
@@ -20,7 +21,10 @@ let quitting = false;
 let overlayMode = null;
 let overlayAnchor = { x: 280, y: 280 };
 let overlayTimeout;
+let overlayBlurTimeout;
 let timerInterval;
+let petBounceInterval;
+let petPressed = false;
 let drag = null;
 let preferencesPath;
 
@@ -106,7 +110,13 @@ function applySettings(patch) {
   // Without a tray, Gemy is the persistent entry point back into the wheel.
   if (!tray) settings.petVisible = true;
   if (settings.petVisible) windows.pet.showInactive();
-  else windows.pet.hide();
+  else {
+    endDrag(false);
+    stopPetBounce();
+    petPressed = false;
+    windows.pet.hide();
+  }
+  if (settings.reducedMotion) stopPetBounce();
   savePreferences();
   updateTray();
   broadcast();
@@ -115,12 +125,14 @@ function applySettings(patch) {
 
 function closeOverlay() {
   clearTimeout(overlayTimeout);
+  clearTimeout(overlayBlurTimeout);
   overlayMode = null;
   windows.overlay.hide();
 }
 
-function placeOverlay(cursor) {
-  const placement = overlayPlacement(cursor, screen.getDisplayNearestPoint(cursor).workArea);
+function placeOverlay(cursor, avoidPet = false) {
+  const petBounds = avoidPet && windows.pet.isVisible() ? windows.pet.getBounds() : undefined;
+  const placement = overlayPlacement(cursor, screen.getDisplayNearestPoint(cursor).workArea, petBounds);
   windows.overlay.setBounds({ x: placement.x, y: placement.y, width: placement.width, height: placement.height });
   windows.overlay.webContents.setZoomFactor(placement.scale);
   overlayAnchor = placement.anchor;
@@ -134,8 +146,9 @@ function openWheel(view = 'guide') {
     return true;
   }
   clearTimeout(overlayTimeout);
+  clearTimeout(overlayBlurTimeout);
   if (overlayMode !== 'wheel' || !windows.overlay.isVisible()) {
-    placeOverlay(screen.getCursorScreenPoint());
+    placeOverlay(screen.getCursorScreenPoint(), true);
     overlayMode = 'wheel';
     windows.overlay.setFocusable(true);
     windows.overlay.setIgnoreMouseEvents(false);
@@ -143,7 +156,26 @@ function openWheel(view = 'guide') {
   send(windows.overlay, 'igem:wheel', { mode: 'wheel', view, x: 280, y: 280 });
   windows.overlay.show();
   windows.overlay.focus();
+  // Keep the launcher clickable even when a small display cannot fit both windows side by side.
+  if (windows.pet.isVisible()) windows.pet.moveTop();
   return true;
+}
+
+function toggleWheel() {
+  if (overlayMode === 'wheel' && windows.overlay.isVisible()) {
+    closeOverlay();
+    return true;
+  }
+  return openWheel();
+}
+
+function closeUnfocusedWheel() {
+  clearTimeout(overlayBlurTimeout);
+  // A pet pointerdown can arrive just after the OS blur event. Its pointerup owns the toggle.
+  overlayBlurTimeout = setTimeout(() => {
+    if (!quitting && !petPressed && overlayMode === 'wheel'
+      && !windows.overlay.isDestroyed() && !windows.overlay.isFocused()) closeOverlay();
+  }, 60);
 }
 
 function ping(id) {
@@ -196,19 +228,48 @@ function handle(channel, roles, handler) {
   });
 }
 
-function endDrag() {
+function stopPetBounce() {
+  if (!petBounceInterval) return;
+  clearInterval(petBounceInterval);
+  petBounceInterval = null;
+  if (!windows.pet.isDestroyed()) windows.pet.setPosition(petPosition.x, petPosition.y);
+}
+
+function endDrag(animate = true) {
   if (!drag) return;
   drag = null;
-  const [x, y] = windows.pet.getPosition();
-  petPosition = { x, y };
+  const bounds = windows.pet.getBounds();
+  const { position, rebound } = petDropPlacement(bounds, PET_SIZE, screen.getDisplayMatching(bounds).workArea);
+  petPosition = position;
+  windows.pet.setPosition(position.x, position.y);
   savePreferences();
+  if (!animate || settings.reducedMotion || (position.x === rebound.x && position.y === rebound.y)) return;
+  const startedAt = Date.now();
+  petBounceInterval = setInterval(() => {
+    const progress = Math.min(1, (Date.now() - startedAt) / 220);
+    if (progress === 1 || quitting || windows.pet.isDestroyed()) {
+      stopPetBounce();
+      return;
+    }
+    const amount = Math.sin(progress * Math.PI);
+    windows.pet.setPosition(Math.round(position.x + (rebound.x - position.x) * amount),
+      Math.round(position.y + (rebound.y - position.y) * amount));
+  }, 16);
 }
 
 function registerIPC() {
   const all = ['pet', 'overlay'];
   handle('get-state', all, state);
+  handle('search-info', ['overlay'], () => loadProjectIndex().info());
+  handle('search-projects', ['overlay'], (input) => loadProjectIndex().search(input));
+  handle('open-project', ['overlay'], async (id) => {
+    const url = loadProjectIndex().projectURL(id);
+    if (!url) return false;
+    try { await shell.openExternal(url); return true; } catch { return false; }
+  });
   handle('update-settings', all, applySettings);
   handle('open-wheel', all, openWheel);
+  handle('toggle-wheel', ['pet'], toggleWheel);
   handle('ping', all, ping);
   handle('close-wheel', ['overlay'], closeOverlay);
   handle('open-link', all, openLink);
@@ -227,6 +288,8 @@ function registerIPC() {
 
   ipcMain.on('igem:drag-start', (event) => {
     if (!trustedSender(event, ['pet'])) return;
+    stopPetBounce();
+    closeOverlay();
     const [x, y] = windows.pet.getPosition();
     drag = { cursor: screen.getCursorScreenPoint(), x, y };
     windows.pet.setIgnoreMouseEvents(false);
@@ -241,14 +304,20 @@ function registerIPC() {
   ipcMain.on('igem:drag-end', (event) => {
     if (trustedSender(event, ['pet'])) endDrag();
   });
-  ipcMain.on('igem:pet-interactive', (event, interactive) => {
-    if (!trustedSender(event, ['pet']) || typeof interactive !== 'boolean' || drag) return;
-    windows.pet.setIgnoreMouseEvents(!interactive, { forward: true });
+  ipcMain.on('igem:pet-interactive', (event, interactive, pressed) => {
+    if (!trustedSender(event, ['pet']) || typeof interactive !== 'boolean') return;
+    if (typeof pressed === 'boolean') {
+      petPressed = pressed;
+      if (!pressed && overlayMode === 'wheel' && !windows.overlay.isFocused()) closeUnfocusedWheel();
+    }
+    if (!drag) windows.pet.setIgnoreMouseEvents(!interactive, { forward: true });
   });
 }
 
 function recoverWindows() {
-  endDrag();
+  endDrag(false);
+  stopPetBounce();
+  petPressed = false;
   const bounds = windows.pet.getBounds();
   petPosition = clampPosition(bounds, PET_SIZE, screen.getDisplayMatching(bounds).workArea);
   windows.pet.setPosition(petPosition.x, petPosition.y);
@@ -291,11 +360,7 @@ async function start() {
   windows.overlay.on('close', (event) => {
     if (!quitting) { event.preventDefault(); closeOverlay(); }
   });
-  windows.overlay.on('blur', () => {
-    setImmediate(() => {
-      if (!quitting && overlayMode === 'wheel' && !windows.overlay.isDestroyed() && !windows.overlay.isFocused()) closeOverlay();
-    });
-  });
+  windows.overlay.on('blur', closeUnfocusedWheel);
   windows.overlay.webContents.on('before-input-event', (event, input) => {
     if (input.key === 'Escape') { event.preventDefault(); closeOverlay(); }
   });
@@ -332,6 +397,8 @@ if (!app.requestSingleInstanceLock()) {
   app.on('before-quit', () => {
     quitting = true;
     clearTimeout(overlayTimeout);
+    clearTimeout(overlayBlurTimeout);
+    stopPetBounce();
     clearInterval(timerInterval);
     globalShortcut.unregisterAll();
   });

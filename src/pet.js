@@ -9,8 +9,8 @@ let activePing = null;
 let reactionTimeout;
 
 function updateText() {
-  pet.title = t('Click for the iGEM guide · drag to move · right-click for settings', '点击打开 iGEM 导航 · 拖动移动 · 右键打开设置');
-  pet.setAttribute('aria-label', t('Open iGEM guide', '打开 iGEM 导航'));
+  pet.title = t('Click to open or close the iGEM guide · drag to move · right-click for settings', '点击开关 iGEM 导航 · 拖动移动 · 右键打开设置');
+  pet.setAttribute('aria-label', t('Toggle iGEM guide', '开关 iGEM 导航'));
   pet.querySelector('img').alt = t('iGEM Ping companion', 'iGEM Ping 桌宠');
   speech.textContent = activePing ? t(activePing.en, activePing.zh) : t('Your iGEM guide', '点我玩转 iGEM');
   updateCountdown();
@@ -56,7 +56,7 @@ pet.addEventListener('pointerdown', (event) => {
   if (event.button !== 0) return;
   pointer = { id: event.pointerId, x: event.screenX, y: event.screenY, dragged: false };
   pet.setPointerCapture(event.pointerId);
-  api?.setPetInteractive(true);
+  api?.setPetInteractive(true, true);
 });
 
 pet.addEventListener('pointermove', (event) => {
@@ -76,7 +76,9 @@ function finishPointer(event, cancelled = false) {
   pet.classList.remove('dragging');
   if (pet.hasPointerCapture(event.pointerId)) pet.releasePointerCapture(event.pointerId);
   if (dragged) api?.dragEnd();
-  else if (!cancelled) api?.openWheel();
+  if (!cancelled && !dragged && api) {
+    api.toggleWheel().finally(() => api.setPetInteractive(pet.matches(':hover'), false));
+  } else api?.setPetInteractive(pet.matches(':hover'), false);
 }
 
 pet.addEventListener('pointerup', (event) => finishPointer(event));
@@ -84,7 +86,7 @@ pet.addEventListener('pointercancel', (event) => finishPointer(event, true));
 pet.addEventListener('lostpointercapture', (event) => finishPointer(event, true));
 pet.addEventListener('click', (event) => {
   // Native keyboard activation has no pointerup event.
-  if (event.detail === 0) api?.openWheel();
+  if (event.detail === 0) api?.toggleWheel();
 });
 pet.addEventListener('contextmenu', (event) => {
   event.preventDefault();

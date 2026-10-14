@@ -12,8 +12,12 @@ function subscribe(channel, callback) {
 
 contextBridge.exposeInMainWorld('igem', Object.freeze({
   getState: () => ipcRenderer.invoke('igem:get-state'),
+  searchInfo: () => ipcRenderer.invoke('igem:search-info'),
+  searchProjects: (input) => ipcRenderer.invoke('igem:search-projects', input),
+  openProject: (id) => ipcRenderer.invoke('igem:open-project', id),
   updateSettings: (patch) => ipcRenderer.invoke('igem:update-settings', patch),
   openWheel: (view) => ipcRenderer.invoke('igem:open-wheel', view),
+  toggleWheel: () => ipcRenderer.invoke('igem:toggle-wheel'),
   ping: (id) => ipcRenderer.invoke('igem:ping', id),
   closeWheel: () => ipcRenderer.invoke('igem:close-wheel'),
   openLink: (key) => ipcRenderer.invoke('igem:open-link', key),
@@ -23,8 +27,10 @@ contextBridge.exposeInMainWorld('igem', Object.freeze({
   dragStart: () => ipcRenderer.send('igem:drag-start'),
   dragMove: () => ipcRenderer.send('igem:drag-move'),
   dragEnd: () => ipcRenderer.send('igem:drag-end'),
-  setPetInteractive: (interactive) => {
-    if (typeof interactive === 'boolean') ipcRenderer.send('igem:pet-interactive', interactive);
+  setPetInteractive: (interactive, pressed) => {
+    if (typeof interactive === 'boolean' && (pressed === undefined || typeof pressed === 'boolean')) {
+      ipcRenderer.send('igem:pet-interactive', interactive, pressed);
+    }
   },
   onState: (callback) => subscribe('igem:state', callback),
   onWheel: (callback) => subscribe('igem:wheel', callback),

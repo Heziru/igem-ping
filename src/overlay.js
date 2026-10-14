@@ -1,3 +1,4 @@
+import { createProjectSearch } from './project-search.js';
 import { GUIDES, RESOURCES, PINGS, icon, t, playSound, applyState, formatTime } from './shared.js';
 
 const api = window.igem;
@@ -24,6 +25,7 @@ let selectedPing = null;
 let busy = false;
 let linkFailed = false;
 let describedEntry = null;
+const projectSearch = createProjectSearch(api, () => { projectSearch.hide(); wheel.hidden=false; setView('guide'); options.querySelector('[data-guide=projects]')?.focus(); });
 
 function entries() {
   return view === 'guide' ? GUIDES : view === 'resources' ? RESOURCES.slice(resourcePage * 6, resourcePage * 6 + 6) : view === 'signals' ? PINGS : preferences;
@@ -42,6 +44,7 @@ function preferenceValue(id) {
 }
 async function choose(entry) {
   if (mode !== 'wheel' || busy || !entry) return;
+  if (view === 'guide' && entry.id === 'projects') { wheel.hidden=true; projectSearch.show(); return; }
   if (view === 'signals') { await api?.ping(entry.id); return; }
   busy = true;
   try {
@@ -77,8 +80,8 @@ function setView(value) {
     button.type = 'button';
     button.className = `wheel-option${entry.id === 'quit' ? ' danger' : ''}`;
     button.dataset[{guide:'guide',resources:'resource',signals:'ping',preferences:'preference'}[view]] = entry.id;
-    button.style.left = `${280 + Math.cos(angle) * 168}px`;
-    button.style.top = `${285 + Math.sin(angle) * 168}px`;
+    button.style.left = `${280 + Math.cos(angle) * 150}px`;
+    button.style.top = `${285 + Math.sin(angle) * 150}px`;
     button.style.setProperty('--entry-delay', `${index * 12}ms`);
     const visual = document.createElement('span');
     visual.className = 'wheel-icon';
@@ -121,7 +124,9 @@ function updateText() {
   cancel.setAttribute('aria-label', t('Close wheel', '关闭轮盘'));
   document.querySelector('#center-note').textContent = t('Close', '关闭');
   next.hidden = view !== 'resources';
-  next.textContent = `${t('More resources','更多资源')} · ${resourcePage + 1} / 2`;
+  next.textContent = `${resourcePage + 1} / 2 ↻`;
+  next.title = t('More resources', '更多资源');
+  next.setAttribute('aria-label', next.title + ' · ' + next.textContent);
   for (const [index, entry] of entries().entries()) {
     const button = options.children[index];
     button.querySelector('.wheel-option-label').textContent = t(entry.en, entry.zh);
@@ -131,9 +136,11 @@ function updateText() {
   }
   if (selectedPing) document.querySelector('#ping-label').textContent = t(selectedPing.en,selectedPing.zh);
   updateDetail();
+  projectSearch.updateText();
 }
 function receiveState(state) { applyState(state); updateText(); }
 function receiveWheel(payload) {
+  projectSearch.hide();
   mode = payload.mode;
   wheel.hidden = mode !== 'wheel';
   marker.hidden = mode !== 'ping';
@@ -161,7 +168,7 @@ for (const button of modes) button.addEventListener('click', () => setView(butto
 next.addEventListener('click', () => { resourcePage = 1 - resourcePage; setView('resources'); });
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') { event.preventDefault(); api?.closeWheel(); }
-  else if (mode === 'wheel' && /^[1-6]$/.test(event.key) && !event.repeat) { event.preventDefault(); choose(entries()[Number(event.key) - 1]); }
+  else if (mode === 'wheel' && !projectSearch.visible() && /^[1-6]$/.test(event.key) && !event.repeat) { event.preventDefault(); choose(entries()[Number(event.key) - 1]); }
 });
 document.addEventListener('contextmenu', (event) => { event.preventDefault(); api?.closeWheel(); });
 wheel.addEventListener('click', (event) => { if (event.target === wheel) api?.closeWheel(); });

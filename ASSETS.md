@@ -21,8 +21,12 @@ The current wheel uses original CSS interface shapes and SVG interface icons def
 
 No League of Legends or Riot Games artwork, sounds, or source code are included. The desktop wheel interaction is inspired by [lolPing](https://github.com/darrenprx/lolPing).
 
+## Project text index
+
+The bundled project-description text has its own source licenses and attribution in [data/README.md](data/README.md). It is not relicensed under the application's MIT license. Each search result retains its team, year and official source URL.
+
 ## Screenshots
 
-`docs/wheel.png` is a screenshot of this application. Its embedded Gemy and iGEM marks remain subject to the exclusions above; the screenshot does not extend the MIT license to them.
+`docs/wheel.png` and `docs/search.png` are screenshots of this application. Its embedded Gemy and iGEM marks remain subject to the exclusions above; the screenshot does not extend the MIT license to them.
 
 For brand or artwork concerns, please open an issue in this repository. The companion artwork can be replaced without changing application logic.

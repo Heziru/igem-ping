@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><title>iGEM Ping Wheel</title><link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="overlay.css"></head>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'"><title>iGEM Ping Wheel</title><link rel="stylesheet" href="shared.css"><link rel="stylesheet" href="overlay.css"><link rel="stylesheet" href="project-search.css"></head>
 <body class="overlay-page">
 <main id="wheel" class="ping-wheel" aria-label="iGEM wheel" hidden>
  <div class="wheel-disc" aria-hidden="true"><span></span><span></span><span></span></div>
@@ -14,5 +14,13 @@
  <button id="resource-next" class="resource-next" hidden>More resources · 1 / 2</button>
  <div class="wheel-footer"><p id="wheel-detail"></p><p id="wheel-hint" role="status" aria-live="polite"></p></div>
 </main>
+<section id="project-search" class="project-search" hidden aria-label="Project Description search">
+ <header class="search-heading"><span id="search-mark" aria-hidden="true"></span><div><h1 id="search-title">Project search</h1><p id="search-subtitle"></p></div><button id="search-back" class="search-back" type="button" aria-label="Back to wheel"></button></header>
+ <form id="search-form"><label id="search-query-label" for="search-query"></label><div class="search-input-row"><input id="search-query" type="search" minlength="2" maxlength="160" required autocomplete="off" spellcheck="false"><button id="search-submit" type="submit">Search</button></div><div class="search-filters"><select id="search-year" aria-label="Filter by year"><option value="">All indexed years</option></select><span id="search-scope"></span></div></form>
+ <p id="search-status" class="search-status" role="status" aria-live="polite"></p>
+ <div id="search-results" class="search-results" aria-label="Search results"></div>
+ <nav id="search-pagination" aria-label="Search pages" hidden><button id="search-previous" type="button">Previous</button><span id="search-page"></span><button id="search-next" type="button">Next</button></nav>
+ <footer class="search-footer"><p id="search-coverage-summary"></p><details id="search-coverage"><summary id="search-coverage-toggle">Index coverage</summary><div class="coverage-content"><p id="search-coverage-note"></p><ul id="search-coverage-years"></ul></div></details><div class="search-footer-row"><span id="search-local"></span><button id="search-directory" type="button">Official team directory</button></div></footer>
+</section>
 <div id="ping-marker" class="ping-marker" role="status" aria-live="assertive" hidden><div class="ping-body"><span id="ping-symbol" class="ping-symbol"></span><span id="ping-label" class="ping-label"></span></div></div>
 <script type="module" src="overlay.js"></script></body></html>
